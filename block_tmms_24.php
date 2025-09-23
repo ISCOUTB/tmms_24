@@ -1,37 +1,14 @@
 <?php
 
-// Solo incluir config si no está ya incluido
-if (!defined('MOODLE_INTERNAL')) {
-    require_once(__DIR__ . '/../../config.php');
-}
+defined('MOODLE_INTERNAL') || die();
 
-// Incluir la clase base de bloques si no está ya incluida
-if (!class_exists('block_base')) {
-    require_once($CFG->dirroot . '/blocks/moodleblock.class.php');
-}
+require_once($CFG->dirroot . '/blocks/moodleblock.class.php');
 
 // Fachada para la lógica de negocio del test TMMS-24
 class TMMS24Facade {
     
     public static function calculate_scores($responses) {
-              // Recent activity (if any)
-        if ($total_completed > 0) {
-            $recent_responses = $DB->get_records('tmms_24', 
-                array('course' => $COURSE->id), 
-                'updated_at DESC', '*', 0, 3);
-                
-            echo '<div class="tmms-recent mb-3">';
-            echo '<h6 class="mb-2">' . get_string('recent_completions', 'block_tmms_24') . '</h6>';
-            foreach ($recent_responses as $response) {
-                $user = $DB->get_record('user', array('id' => $response->user));
-                $date_field = $response->updated_at > 0 ? $response->updated_at : $response->created_at;
-                echo '<div class="d-flex justify-content-between align-items-center mb-1">';
-                echo '<span class="small">' . fullname($user) . '</span>';
-                echo '<span class="badge badge-success small">' . userdate($date_field, '%d/%m') . '</span>';
-                echo '</div>';
-            }
-            echo '</div>';
-        }rray_sum(array_slice($responses, 0, 8));
+        $percepcion = array_sum(array_slice($responses, 0, 8));
         $comprension = array_sum(array_slice($responses, 8, 8));
         $regulacion = array_sum(array_slice($responses, 16, 8));
         
