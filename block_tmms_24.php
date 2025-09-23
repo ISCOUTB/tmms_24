@@ -14,7 +14,24 @@ if (!class_exists('block_base')) {
 class TMMS24Facade {
     
     public static function calculate_scores($responses) {
-        $percepcion = array_sum(array_slice($responses, 0, 8));
+              // Recent activity (if any)
+        if ($total_completed > 0) {
+            $recent_responses = $DB->get_records('tmms_24', 
+                array('course' => $COURSE->id), 
+                'updated_at DESC', '*', 0, 3);
+                
+            echo '<div class="tmms-recent mb-3">';
+            echo '<h6 class="mb-2">' . get_string('recent_completions', 'block_tmms_24') . '</h6>';
+            foreach ($recent_responses as $response) {
+                $user = $DB->get_record('user', array('id' => $response->user));
+                $date_field = $response->updated_at > 0 ? $response->updated_at : $response->created_at;
+                echo '<div class="d-flex justify-content-between align-items-center mb-1">';
+                echo '<span class="small">' . fullname($user) . '</span>';
+                echo '<span class="badge badge-success small">' . userdate($date_field, '%d/%m') . '</span>';
+                echo '</div>';
+            }
+            echo '</div>';
+        }rray_sum(array_slice($responses, 0, 8));
         $comprension = array_sum(array_slice($responses, 8, 8));
         $regulacion = array_sum(array_slice($responses, 16, 8));
         
@@ -163,15 +180,40 @@ class block_tmms_24 extends block_base {
     private function show_student_results($entry) {
         global $COURSE;
         
-        // Parse responses and calculate scores
-        $responses = json_decode($entry->responses, true);
-        $scores = TMMS24Facade::calculate_scores($responses);
+        // Build responses array from individual item fields
+        $responses = [];
+        for ($i = 1; $i <= 24; $i++) {
+            $field_name = 'item' . $i;
+            if (isset($entry->$field_name)) {
+                $responses[] = (int)$entry->$field_name;
+            }
+        }
+        
+        // If we don't have all 24 responses, show error
+        if (count($responses) !== 24) {
+            echo '<div class="alert alert-warning">' . get_string('incomplete_data', 'block_tmms_24') . '</div>';
+            return;
+        }
+        
+        // Calculate scores using individual scores if available, otherwise calculate from responses
+        if (isset($entry->percepcion_score) && isset($entry->comprension_score) && isset($entry->regulacion_score)) {
+            $scores = [
+                'percepcion' => (int)$entry->percepcion_score,
+                'comprension' => (int)$entry->comprension_score,
+                'regulacion' => (int)$entry->regulacion_score
+            ];
+        } else {
+            $scores = TMMS24Facade::calculate_scores($responses);
+        }
+        
         $interpretations = TMMS24Facade::get_all_interpretations($scores, $entry->gender);
         
         // Completion date
         $completion_date = '';
-        if (isset($entry->timemodified) && $entry->timemodified > 0) {
-            $completion_date = userdate($entry->timemodified, get_string('strftimedatefullshort'));
+        if (isset($entry->updated_at) && $entry->updated_at > 0) {
+            $completion_date = userdate($entry->updated_at, get_string('strftimedatefullshort'));
+        } else if (isset($entry->created_at) && $entry->created_at > 0) {
+            $completion_date = userdate($entry->created_at, get_string('strftimedatefullshort'));
         } else {
             $completion_date = get_string('date_not_available', 'block_tmms_24');
         }
@@ -425,15 +467,16 @@ class block_tmms_24 extends block_base {
         if ($total_completed > 0) {
             $recent_responses = $DB->get_records('tmms_24', 
                 array('course' => $COURSE->id), 
-                'timemodified DESC', '*', 0, 3);
+                'updated_at DESC', '*', 0, 3);
                 
             echo '<div class="tmms-recent mb-3">';
             echo '<h6 class="mb-2">' . get_string('recent_completions', 'block_tmms_24') . '</h6>';
             foreach ($recent_responses as $response) {
                 $user = $DB->get_record('user', array('id' => $response->user));
+                $completion_date = $response->updated_at > 0 ? $response->updated_at : $response->created_at;
                 echo '<div class="d-flex justify-content-between align-items-center mb-1">';
                 echo '<span class="small">' . fullname($user) . '</span>';
-                echo '<span class="badge badge-success small">' . userdate($response->timemodified, '%d/%m') . '</span>';
+                echo '<span class="badge badge-success small">' . userdate($completion_date, '%d/%m') . '</span>';
                 echo '</div>';
             }
             echo '</div>';

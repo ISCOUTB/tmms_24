@@ -73,6 +73,7 @@ $string['validation_required'] = 'Please answer all items before submitting.';
 $string['validation_missing_items'] = 'The following items are unanswered:';
 $string['validation_age_required'] = 'Please enter your age.';
 $string['validation_gender_required'] = 'Please select your gender.';
+$string['incomplete_data'] = 'The test data is incomplete. Please take the test again.';
 
 // Success messages
 $string['test_saved_successfully'] = 'Test completed successfully!';

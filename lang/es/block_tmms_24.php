@@ -74,6 +74,7 @@ $string['validation_required'] = 'Por favor responde todos los ítems antes de e
 $string['validation_missing_items'] = 'Los siguientes ítems no tienen respuesta:';
 $string['validation_age_required'] = 'Por favor ingresa tu edad.';
 $string['validation_gender_required'] = 'Por favor selecciona tu sexo.';
+$string['incomplete_data'] = 'Los datos del test están incompletos. Por favor, realiza el test nuevamente.';
 
 // Mensajes de éxito
 $string['test_saved_successfully'] = '¡Test completado exitosamente!';
@@ -110,6 +111,9 @@ $string['of'] = 'de';
 $string['students_completed'] = 'estudiantes completaron';
 $string['recent_completions'] = 'Finalizaciones Recientes';
 $string['view_all_results'] = 'Ver Todos los Resultados';
+
+// Error messages
+$string['incomplete_data'] = 'Los datos del test están incompletos. Por favor, contacte al administrador.';
 
 // Ítems TMMS-24 (Español)
 $string['item1'] = 'Presto mucha atención a los sentimientos.';
