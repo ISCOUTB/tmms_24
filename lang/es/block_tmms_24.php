@@ -83,6 +83,34 @@ $string['results_exported'] = 'Resultados exportados exitosamente.';
 $string['progress'] = 'Progreso';
 $string['items_completed'] = 'ítems completados';
 
+// Enhanced block display
+$string['emotional_intelligence_test'] = 'Test de Inteligencia Emocional';
+$string['your_emotional_intelligence'] = 'Tu Inteligencia Emocional';
+$string['your_top_dimension'] = 'Tu Dimensión Principal';
+$string['other_dimensions'] = 'Otras Dimensiones';
+$string['test_description_short'] = 'Evalúa tu capacidad para percibir, comprender y regular emociones.';
+$string['duration_5_minutes'] = '~5 minutos de duración';
+$string['24_questions'] = '24 preguntas';
+$string['3_dimensions'] = '3 dimensiones evaluadas';
+$string['what_you_will_discover'] = 'Qué descubrirás:';
+$string['perception_ability'] = 'Tu capacidad de percepción emocional';
+$string['comprehension_ability'] = 'Tu comprensión de emociones';
+$string['regulation_ability'] = 'Tu regulación emocional';
+$string['start_test'] = 'Iniciar Test';
+$string['points'] = 'puntos';
+$string['date_not_available'] = 'Fecha no disponible';
+
+// Management interface
+$string['management_title'] = 'Gestión TMMS-24';
+$string['course_overview'] = 'Resumen del curso';
+$string['completion_rate'] = 'Tasa de Finalización';
+$string['completed'] = 'Completados';
+$string['pending'] = 'Pendientes';
+$string['of'] = 'de';
+$string['students_completed'] = 'estudiantes completaron';
+$string['recent_completions'] = 'Finalizaciones Recientes';
+$string['view_all_results'] = 'Ver Todos los Resultados';
+
 // Ítems TMMS-24 (Español)
 $string['item1'] = 'Presto mucha atención a los sentimientos.';
 $string['item2'] = 'Normalmente me preocupo mucho por lo que siento.';

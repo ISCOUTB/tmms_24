@@ -128,3 +128,30 @@ $string['no_results_yet'] = 'No results have been submitted yet.';
 // Student results strings
 $string['your_results'] = 'Your Results';
 $string['view_detailed_results'] = 'View Detailed Results';
+
+// Enhanced block display
+$string['emotional_intelligence_test'] = 'Emotional Intelligence Test';
+$string['your_emotional_intelligence'] = 'Your Emotional Intelligence';
+$string['your_top_dimension'] = 'Your Top Dimension';
+$string['other_dimensions'] = 'Other Dimensions';
+$string['test_description_short'] = 'Assess your ability to perceive, understand and regulate emotions.';
+$string['duration_5_minutes'] = '~5 minutes duration';
+$string['24_questions'] = '24 questions';
+$string['3_dimensions'] = '3 dimensions assessed';
+$string['what_you_will_discover'] = 'What you will discover:';
+$string['perception_ability'] = 'Your emotional perception ability';
+$string['comprehension_ability'] = 'Your emotional comprehension';
+$string['regulation_ability'] = 'Your emotional regulation';
+$string['start_test'] = 'Start Test';
+$string['points'] = 'points';
+$string['date_not_available'] = 'Date not available';
+
+// Management interface
+$string['management_title'] = 'TMMS-24 Management';
+$string['course_overview'] = 'Course overview';
+$string['completion_rate'] = 'Completion Rate';
+$string['completed'] = 'Completed';
+$string['pending'] = 'Pending';
+$string['of'] = 'of';
+$string['students_completed'] = 'students completed';
+$string['recent_completions'] = 'Recent Completions';
