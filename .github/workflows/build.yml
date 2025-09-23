@@ -1,0 +1,36 @@
+name: Build Artifact
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Get short SHA
+      id: vars
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      
+    - name: Create plugin directory structure
+      run: |
+        mkdir -p tmms_24
+        cp -r * tmms_24/ 2>/dev/null || true
+        rm -rf tmms_24/.git tmms_24/.github
+        
+    - name: Create ZIP artifact
+      run: |
+        zip -r tmms_24-dev-${{ steps.vars.outputs.sha_short }}.zip tmms_24/
+        
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: tmms_24-dev-${{ steps.vars.outputs.sha_short }}
+        path: tmms_24-dev-${{ steps.vars.outputs.sha_short }}.zip
+        retention-days: 30

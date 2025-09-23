@@ -1,0 +1,378 @@
+<?php
+require_once(dirname(__FILE__) . '/../../config.php');
+
+// Incluir la clase base de bloques para Moodle 4.1
+require_once($CFG->dirroot . '/blocks/moodleblock.class.php');
+
+// Ahora incluir nuestro archivo después de que Moodle esté cargado
+require_once(dirname(__FILE__) . '/block_tmms_24.php');
+
+if (!isloggedin()) {
+    redirect($CFG->wwwroot . '/login/index.php');
+}
+
+$courseid = required_param('cid', PARAM_INT);
+$view_results = optional_param('view_results', 0, PARAM_INT);
+
+if ($courseid == SITEID && !$courseid) {
+    redirect($CFG->wwwroot);
+}
+
+$course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
+$PAGE->set_course($course);
+$context = $PAGE->context;
+
+$PAGE->set_url('/blocks/tmms_24/view.php', array('cid' => $courseid));
+$PAGE->set_pagelayout('standard');
+$PAGE->set_title(get_string('test_title', 'block_tmms_24'));
+$PAGE->set_heading(get_string('test_title', 'block_tmms_24'));
+
+// Verificar si ya existe información del usuario
+$entry = $DB->get_record('tmms_24', array('user' => $USER->id, 'course' => $courseid));
+
+echo $OUTPUT->header();
+echo "<link rel='stylesheet' href='" . $CFG->wwwroot . "/blocks/tmms_24/styles.css'>";
+echo "<div class='block_tmms_24_container'>";
+
+if ($entry && $view_results) {
+    // Mostrar resultados completos
+    $responses = [
+        $entry->item1, $entry->item2, $entry->item3, $entry->item4, $entry->item5, $entry->item6, $entry->item7, $entry->item8,
+        $entry->item9, $entry->item10, $entry->item11, $entry->item12, $entry->item13, $entry->item14, $entry->item15, $entry->item16,
+        $entry->item17, $entry->item18, $entry->item19, $entry->item20, $entry->item21, $entry->item22, $entry->item23, $entry->item24
+    ];
+    
+    $scores = TMMS24Facade::calculate_scores($responses);
+    $interpretations = TMMS24Facade::get_all_interpretations($scores, $entry->gender);
+    
+    echo "<div class='tmms-results-container'>";
+    echo "<h2>" . get_string('results_title', 'block_tmms_24') . "</h2>";
+    
+    echo "<div class='results-summary'>";
+    echo "<table class='table table-striped'>";
+    echo "<thead>";
+    echo "<tr>";
+    echo "<th>" . get_string('dimension', 'block_tmms_24') . "</th>";
+    echo "<th>" . get_string('score', 'block_tmms_24') . "</th>";
+    echo "<th>" . get_string('interpretation', 'block_tmms_24') . "</th>";
+    echo "</tr>";
+    echo "</thead>";
+    echo "<tbody>";
+    
+    if ($entry->gender === 'prefiero_no_decir') {
+        // Mostrar ambas interpretaciones
+        foreach (['Hombre', 'Mujer'] as $gender_label) {
+            echo "<tr><td colspan='3'><strong>" . get_string('results_for_' . strtolower($gender_label === 'Hombre' ? 'male' : 'female'), 'block_tmms_24') . "</strong></td></tr>";
+            echo "<tr>";
+            echo "<td>" . get_string('perception', 'block_tmms_24') . "</td>";
+            echo "<td>" . $scores['percepcion'] . "</td>";
+            echo "<td>" . $interpretations[$gender_label]['percepcion'] . "</td>";
+            echo "</tr>";
+            echo "<tr>";
+            echo "<td>" . get_string('comprehension', 'block_tmms_24') . "</td>";
+            echo "<td>" . $scores['comprension'] . "</td>";
+            echo "<td>" . $interpretations[$gender_label]['comprension'] . "</td>";
+            echo "</tr>";
+            echo "<tr>";
+            echo "<td>" . get_string('regulation', 'block_tmms_24') . "</td>";
+            echo "<td>" . $scores['regulacion'] . "</td>";
+            echo "<td>" . $interpretations[$gender_label]['regulacion'] . "</td>";
+            echo "</tr>";
+        }
+    } else {
+        echo "<tr>";
+        echo "<td>" . get_string('perception', 'block_tmms_24') . "</td>";
+        echo "<td>" . $scores['percepcion'] . "</td>";
+        echo "<td>" . $interpretations['result']['percepcion'] . "</td>";
+        echo "</tr>";
+        echo "<tr>";
+        echo "<td>" . get_string('comprehension', 'block_tmms_24') . "</td>";
+        echo "<td>" . $scores['comprension'] . "</td>";
+        echo "<td>" . $interpretations['result']['comprension'] . "</td>";
+        echo "</tr>";
+        echo "<tr>";
+        echo "<td>" . get_string('regulation', 'block_tmms_24') . "</td>";
+        echo "<td>" . $scores['regulacion'] . "</td>";
+        echo "<td>" . $interpretations['result']['regulacion'] . "</td>";
+        echo "</tr>";
+    }
+    
+    echo "</tbody>";
+    echo "</table>";
+    echo "</div>";
+    
+    // Botones de acción
+    echo "<div class='results-actions'>";
+    echo "<a href='" . new moodle_url('/blocks/tmms_24/export.php', array('cid' => $courseid, 'format' => 'csv')) . "' class='btn btn-success'>" . get_string('download_csv', 'block_tmms_24') . "</a> ";
+    echo "<a href='" . new moodle_url('/blocks/tmms_24/export.php', array('cid' => $courseid, 'format' => 'json')) . "' class='btn btn-success'>" . get_string('download_json', 'block_tmms_24') . "</a> ";
+    echo "<a href='" . new moodle_url('/course/view.php', array('id' => $courseid)) . "' class='btn btn-secondary'>" . get_string('back_to_course', 'block_tmms_24') . "</a>";
+    echo "</div>";
+    
+    // Disclaimer
+    echo "<div class='disclaimer'>";
+    echo "<p><em>" . get_string('disclaimer', 'block_tmms_24') . "</em></p>";
+    echo "<p><small>" . get_string('legal_notice', 'block_tmms_24') . "</small></p>";
+    echo "</div>";
+    
+    echo "</div>";
+
+} else if ($entry && !$view_results) {
+    // Ya completó el test, mostrar opción de ver resultados o retomar
+    echo "<div class='test-completed-message'>";
+    echo "<h2>" . get_string('test_completed', 'block_tmms_24') . "</h2>";
+    echo "<p>Ya has completado el test TMMS-24.</p>";
+    echo "<div class='completed-actions'>";
+    echo "<a href='" . new moodle_url('/blocks/tmms_24/view.php', array('cid' => $courseid, 'view_results' => 1)) . "' class='btn btn-primary'>" . get_string('view_full_results', 'block_tmms_24') . "</a> ";
+    echo "<a href='" . new moodle_url('/course/view.php', array('id' => $courseid)) . "' class='btn btn-secondary'>" . get_string('back_to_course', 'block_tmms_24') . "</a>";
+    echo "</div>";
+    echo "</div>";
+
+} else {
+    // Mostrar formulario del test
+    echo "<div class='tmms-test-container'>";
+    
+    // Instrucciones
+    echo "<div class='test-instructions'>";
+    echo "<h2>" . get_string('instructions_title', 'block_tmms_24') . "</h2>";
+    echo "<p>" . get_string('instructions_text', 'block_tmms_24') . "</p>";
+    echo "<p>" . get_string('instructions_text2', 'block_tmms_24') . "</p>";
+    
+    echo "<div class='scale-legend'>";
+    echo "<h4>" . get_string('scale_legend', 'block_tmms_24') . "</h4>";
+    echo "<ul>";
+    echo "<li>" . get_string('scale_1', 'block_tmms_24') . "</li>";
+    echo "<li>" . get_string('scale_2', 'block_tmms_24') . "</li>";
+    echo "<li>" . get_string('scale_3', 'block_tmms_24') . "</li>";
+    echo "<li>" . get_string('scale_4', 'block_tmms_24') . "</li>";
+    echo "<li>" . get_string('scale_5', 'block_tmms_24') . "</li>";
+    echo "</ul>";
+    echo "</div>";
+    echo "</div>";
+    
+    // Formulario
+    echo "<form method='POST' action='" . $CFG->wwwroot . "/blocks/tmms_24/save.php' class='tmms-form' id='tmmsForm'>";
+    echo "<input type='hidden' name='cid' value='" . $courseid . "'>";
+    echo "<input type='hidden' name='sesskey' value='" . sesskey() . "'>";
+    
+    // Datos demográficos
+    echo "<div class='demographics-section'>";
+    echo "<h3>" . get_string('demographics', 'block_tmms_24') . "</h3>";
+    echo "<div class='form-row'>";
+    echo "<div class='form-group'>";
+    echo "<label for='age'>" . get_string('age', 'block_tmms_24') . " *</label>";
+    echo "<input type='number' id='age' name='age' class='form-control' min='10' max='100' required>";
+    echo "</div>";
+    echo "<div class='form-group'>";
+    echo "<label for='gender'>" . get_string('gender', 'block_tmms_24') . " *</label>";
+    echo "<select id='gender' name='gender' class='form-control' required>";
+    echo "<option value=''>Seleccione...</option>";
+    echo "<option value='M'>" . get_string('gender_male', 'block_tmms_24') . "</option>";
+    echo "<option value='F'>" . get_string('gender_female', 'block_tmms_24') . "</option>";
+    echo "<option value='prefiero_no_decir'>" . get_string('gender_prefer_not_say', 'block_tmms_24') . "</option>";
+    echo "</select>";
+    echo "</div>";
+    echo "</div>";
+    echo "</div>";
+    
+    // Barra de progreso
+    echo "<div class='progress-container'>";
+    echo "<div class='progress-bar'>";
+    echo "<div class='progress-fill' id='progressFill'></div>";
+    echo "</div>";
+    echo "<div class='progress-text' id='progressText'>0 / 24 " . get_string('items_completed', 'block_tmms_24') . "</div>";
+    echo "</div>";
+    
+    // Cuestionario
+    echo "<div class='questionnaire-section'>";
+    echo "<h3>" . get_string('questionnaire', 'block_tmms_24') . "</h3>";
+    
+    $items = TMMS24Facade::get_tmms24_items();
+    foreach ($items as $number => $text) {
+        echo "<div class='question-item' data-item='" . $number . "'>";
+        echo "<div class='question-header'>";
+        echo "<span class='question-number'>" . $number . ".</span>";
+        echo "<span class='question-text'>" . $text . "</span>";
+        echo "</div>";
+        echo "<div class='likert-scale'>";
+        for ($i = 1; $i <= 5; $i++) {
+            echo "<label class='likert-option'>";
+            echo "<input type='radio' name='item" . $number . "' value='" . $i . "' required>";
+            echo "<span class='likert-label'>" . $i . "</span>";
+            echo "</label>";
+        }
+        echo "</div>";
+        echo "<div class='validation-error' id='error-item" . $number . "' style='display: none;'>";
+        echo get_string('please_answer_item', 'block_tmms_24');
+        echo "</div>";
+        echo "</div>";
+    }
+    
+    echo "</div>";
+    
+    // Mensaje de validación general
+    echo "<div class='validation-summary' id='validationSummary' style='display: none;'>";
+    echo "<p>" . get_string('validation_required', 'block_tmms_24') . "</p>";
+    echo "<div id='missingItems'></div>";
+    echo "</div>";
+    
+    // Botón de envío
+    echo "<div class='form-actions'>";
+    echo "<button type='submit' class='btn btn-primary btn-lg' id='submitBtn'>" . get_string('submit_test', 'block_tmms_24') . "</button>";
+    echo "<a href='" . new moodle_url('/course/view.php', array('id' => $courseid)) . "' class='btn btn-secondary'>" . get_string('back_to_course', 'block_tmms_24') . "</a>";
+    echo "</div>";
+    
+    echo "</form>";
+    echo "</div>";
+}
+
+echo "</div>";
+
+// JavaScript para validación y UX
+echo "<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('tmmsForm');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    
+    if (form) {
+        // Progreso y guardado local
+        updateProgress();
+        loadFromLocalStorage();
+        
+        // Event listeners para los radios
+        const radios = form.querySelectorAll('input[type=\"radio\"]');
+        radios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                updateProgress();
+                saveToLocalStorage();
+                // Limpiar error de validación
+                const itemNumber = this.name.replace('item', '');
+                const errorDiv = document.getElementById('error-item' + itemNumber);
+                if (errorDiv) {
+                    errorDiv.style.display = 'none';
+                }
+            });
+        });
+        
+        // Validación del formulario
+        form.addEventListener('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+                return false;
+            }
+            // Limpiar localStorage al enviar
+            clearLocalStorage();
+        });
+        
+        // Guardado automático de datos demográficos
+        const ageInput = document.getElementById('age');
+        const genderSelect = document.getElementById('gender');
+        
+        if (ageInput) {
+            ageInput.addEventListener('input', saveToLocalStorage);
+        }
+        if (genderSelect) {
+            genderSelect.addEventListener('change', saveToLocalStorage);
+        }
+    }
+    
+    function updateProgress() {
+        const totalItems = 24;
+        const completedItems = form.querySelectorAll('input[type=\"radio\"]:checked').length;
+        const percentage = (completedItems / totalItems) * 100;
+        
+        if (progressFill) {
+            progressFill.style.width = percentage + '%';
+        }
+        if (progressText) {
+            progressText.textContent = completedItems + ' / ' + totalItems + ' " . get_string('items_completed', 'block_tmms_24') . "';
+        }
+    }
+    
+    function validateForm() {
+        let isValid = true;
+        const missingItems = [];
+        
+        // Validar datos demográficos
+        const age = document.getElementById('age').value;
+        const gender = document.getElementById('gender').value;
+        
+        if (!age) {
+            alert('" . get_string('validation_age_required', 'block_tmms_24') . "');
+            return false;
+        }
+        if (!gender) {
+            alert('" . get_string('validation_gender_required', 'block_tmms_24') . "');
+            return false;
+        }
+        
+        // Validar todos los ítems
+        for (let i = 1; i <= 24; i++) {
+            const radios = form.querySelectorAll('input[name=\"item' + i + '\"]');
+            const checked = form.querySelector('input[name=\"item' + i + '\"]:checked');
+            
+            if (!checked) {
+                isValid = false;
+                missingItems.push(i);
+                const errorDiv = document.getElementById('error-item' + i);
+                if (errorDiv) {
+                    errorDiv.style.display = 'block';
+                }
+            }
+        }
+        
+        if (!isValid) {
+            const validationSummary = document.getElementById('validationSummary');
+            const missingItemsDiv = document.getElementById('missingItems');
+            
+            if (validationSummary && missingItemsDiv) {
+                missingItemsDiv.innerHTML = '" . get_string('validation_missing_items', 'block_tmms_24') . " ' + missingItems.join(', ');
+                validationSummary.style.display = 'block';
+                validationSummary.scrollIntoView({ behavior: 'smooth' });
+            }
+        } else {
+            const validationSummary = document.getElementById('validationSummary');
+            if (validationSummary) {
+                validationSummary.style.display = 'none';
+            }
+        }
+        
+        return isValid;
+    }
+    
+    function saveToLocalStorage() {
+        const formData = new FormData(form);
+        const data = {};
+        for (let [key, value] of formData.entries()) {
+            data[key] = value;
+        }
+        localStorage.setItem('tmms24_draft_' + " . $courseid . ", JSON.stringify(data));
+    }
+    
+    function loadFromLocalStorage() {
+        const saved = localStorage.getItem('tmms24_draft_' + " . $courseid . ");
+        if (saved) {
+            const data = JSON.parse(saved);
+            Object.keys(data).forEach(key => {
+                const element = form.querySelector('[name=\"' + key + '\"]');
+                if (element) {
+                    if (element.type === 'radio') {
+                        const radio = form.querySelector('[name=\"' + key + '\"][value=\"' + data[key] + '\"]');
+                        if (radio) radio.checked = true;
+                    } else {
+                        element.value = data[key];
+                    }
+                }
+            });
+            updateProgress();
+        }
+    }
+    
+    function clearLocalStorage() {
+        localStorage.removeItem('tmms24_draft_' + " . $courseid . ");
+    }
+});
+</script>";
+
+echo $OUTPUT->footer();
+?>

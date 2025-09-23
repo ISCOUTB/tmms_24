@@ -1,0 +1,71 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Get version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      
+    - name: Create plugin directory structure
+      run: |
+        mkdir -p tmms_24
+        cp -r * tmms_24/ 2>/dev/null || true
+        rm -rf tmms_24/.git tmms_24/.github
+        
+    - name: Create ZIP artifact
+      run: |
+        zip -r tmms_24-${{ steps.get_version.outputs.VERSION }}.zip tmms_24/
+        
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: TMMS-24 Block ${{ steps.get_version.outputs.VERSION }}
+        body: |
+          ## TMMS-24 Moodle Block Release ${{ steps.get_version.outputs.VERSION }}
+          
+          ### Installation
+          1. Download the ZIP file below
+          2. Extract to your Moodle installation: `/path/to/moodle/blocks/tmms_24/`
+          3. Visit your Moodle site as administrator to complete installation
+          
+          ### What's Included
+          - Complete TMMS-24 psychological test implementation
+          - Role-based access control (students vs teachers/admins)
+          - Multilingual support (English/Spanish)
+          - Statistics dashboard for teachers
+          - CSV export functionality
+          
+          ### Requirements
+          - Moodle 4.1 or higher
+          - PHP 7.4 or higher
+          
+          ### Support
+          For issues and questions, please use the GitHub issue tracker.
+        draft: false
+        prerelease: false
+        
+    - name: Upload Release Asset
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./tmms_24-${{ steps.get_version.outputs.VERSION }}.zip
+        asset_name: tmms_24-${{ steps.get_version.outputs.VERSION }}.zip
+        asset_content_type: application/zip
