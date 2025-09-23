@@ -1,6 +1,6 @@
 <?php
 
-$string['pluginname'] = 'Test TMMS-24';
+$string['pluginname'] = 'Prueba de Inteligencia Emocional TMMS-24';
 $string['tmms_24'] = 'TMMS-24';
 $string['tmms_24:addinstance'] = 'Agregar un nuevo bloque TMMS-24';
 $string['tmms_24:myaddinstance'] = 'Agregar un nuevo bloque TMMS-24 a la página Mi Moodle';
