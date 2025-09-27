@@ -8,7 +8,7 @@ function xmldb_block_tmms_24_upgrade($oldversion) {
 
     if ($oldversion < 2025092321) {
         // Force capability refresh
-        accesslib_clear_all_caches_for_unit_testing();
+        accesslib_clear_all_caches();
         
         // Update capabilities for all contexts where the block is installed
         $contexts = $DB->get_records_sql("
