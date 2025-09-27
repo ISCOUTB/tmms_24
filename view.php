@@ -103,8 +103,13 @@ if ($entry && $view_results) {
     
     // Botones de acción
     echo "<div class='results-actions'>";
-    echo "<a href='" . new moodle_url('/blocks/tmms_24/export.php', array('cid' => $courseid, 'format' => 'csv')) . "' class='btn btn-success'>" . get_string('download_csv', 'block_tmms_24') . "</a> ";
-    echo "<a href='" . new moodle_url('/blocks/tmms_24/export.php', array('cid' => $courseid, 'format' => 'json')) . "' class='btn btn-success'>" . get_string('download_json', 'block_tmms_24') . "</a> ";
+    
+    // Solo profesores/administradores pueden descargar resultados
+    if (has_capability('block/tmms_24:viewallresults', context_course::instance($courseid))) {
+        echo "<a href='" . new moodle_url('/blocks/tmms_24/export.php', array('cid' => $courseid, 'format' => 'csv')) . "' class='btn btn-success'>" . get_string('download_csv', 'block_tmms_24') . "</a> ";
+        echo "<a href='" . new moodle_url('/blocks/tmms_24/export.php', array('cid' => $courseid, 'format' => 'json')) . "' class='btn btn-success'>" . get_string('download_json', 'block_tmms_24') . "</a> ";
+    }
+    
     echo "<a href='" . new moodle_url('/course/view.php', array('id' => $courseid)) . "' class='btn btn-secondary'>" . get_string('back_to_course', 'block_tmms_24') . "</a>";
     echo "</div>";
     
@@ -117,17 +122,17 @@ if ($entry && $view_results) {
     echo "</div>";
 
 } else if ($entry && !$view_results) {
-    // Ya completó el test, mostrar opción de ver resultados o retomar
+    // Ya completó el test, mostrar opción de ver resultados (NO retomar)
     echo "<div class='test-completed-message'>";
     echo "<h2>" . get_string('test_completed', 'block_tmms_24') . "</h2>";
-    echo "<p>Ya has completado el test TMMS-24.</p>";
+    echo "<p>" . get_string('test_already_completed', 'block_tmms_24') . "</p>";
     echo "<div class='completed-actions'>";
     echo "<a href='" . new moodle_url('/blocks/tmms_24/view.php', array('cid' => $courseid, 'view_results' => 1)) . "' class='btn btn-primary'>" . get_string('view_full_results', 'block_tmms_24') . "</a> ";
     echo "<a href='" . new moodle_url('/course/view.php', array('id' => $courseid)) . "' class='btn btn-secondary'>" . get_string('back_to_course', 'block_tmms_24') . "</a>";
     echo "</div>";
     echo "</div>";
 
-} else {
+} else if (!$entry) {
     // Mostrar formulario del test
     echo "<div class='tmms-test-container'>";
     

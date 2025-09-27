@@ -3,8 +3,6 @@ $string['pluginname'] = 'TMMS-24 Test';
 $string['tmms_24'] = 'TMMS-24';
 $string['tmms_24:addinstance'] = 'Add a new TMMS-24 block';
 $string['tmms_24:myaddinstance'] = 'Add a new TMMS-24 block to the My Moodle page';
-$string['tmms_24:taketest'] = 'Take the TMMS-24 test';
-$string['tmms_24:viewallresults'] = 'View all TMMS-24 results';
 
 // Block content
 $string['test_title'] = 'Emotional Intelligence Test (TMMS-24)';
@@ -32,16 +30,13 @@ $string['gender'] = 'Gender';
 $string['gender_male'] = 'Male';
 $string['gender_female'] = 'Female';
 $string['gender_prefer_not_say'] = 'Prefer not to say';
-$string['male'] = 'Male';
-$string['female'] = 'Female';
-$string['other'] = 'Other';
 
 // Test items
 $string['questionnaire'] = 'Questionnaire';
 $string['item'] = 'Item';
 
 // Dimensions
-$string['perception'] = 'Perception'; 
+$string['perception'] = 'Perception';
 $string['comprehension'] = 'Comprehension';
 $string['regulation'] = 'Regulation';
 
@@ -56,37 +51,69 @@ $string['must_improve_low_attention'] = 'Needs improvement (pays too little atte
 $string['must_improve_high_attention'] = 'Needs improvement (pays too much attention)';
 $string['adequate'] = 'Adequate';
 $string['excellent'] = 'Excellent';
-$string['needs_improvement'] = 'Needs improvement';
-$string['must_improve'] = 'Must improve';
-$string['not_determined'] = 'Not determined';
+$string['must_improve'] = 'Needs improvement';
 
-// TMMS-24 Items (English) - CORRECTED VERSION
-$string['item1'] = 'I pay a lot of attention to feelings.';
-$string['item2'] = 'I usually worry about what I feel.';
+// Gender-specific results
+$string['results_for_male'] = 'Results for Male';
+$string['results_for_female'] = 'Results for Female';
+
+// Footer disclaimer
+$string['disclaimer'] = 'Remember that the accuracy of the results depends on your sincerity when answering. This tool is for educational/guidance purposes.';
+$string['legal_notice'] = 'The TMMS-24 is a self-report scale for educational/guidance purposes and does not substitute for a professional psychological evaluation.';
+
+// Buttons
+$string['submit_test'] = 'Submit Test';
+$string['download_csv'] = 'Download CSV';
+$string['download_json'] = 'Download JSON';
+$string['back_to_course'] = 'Back to Course';
+$string['retake_test'] = 'Retake Test';
+
+// Validation messages
+$string['validation_required'] = 'Please answer all items before submitting.';
+$string['validation_missing_items'] = 'The following items are unanswered:';
+$string['validation_age_required'] = 'Please enter your age.';
+$string['validation_gender_required'] = 'Please select your gender.';
+$string['incomplete_data'] = 'The test data is incomplete. Please take the test again.';
+
+// Success messages
+$string['test_saved_successfully'] = 'Test completed successfully!';
+$string['results_exported'] = 'Results exported successfully.';
+
+// Progress
+$string['progress'] = 'Progress';
+$string['items_completed'] = 'items completed';
+
+// TMMS-24 Items (English)
+$string['item1'] = 'I pay a lot of attention to my feelings.';
+$string['item2'] = 'I usually worry a lot about what I feel.';
 $string['item3'] = 'I usually spend time thinking about my emotions.';
-$string['item4'] = 'I think it is worth paying attention to my emotions and mood.';
+$string['item4'] = 'I think it is worthwhile to pay attention to my emotions and mood.';
 $string['item5'] = 'I let my feelings affect my thoughts.';
 $string['item6'] = 'I think about my mood constantly.';
 $string['item7'] = 'I often think about my feelings.';
 $string['item8'] = 'I pay a lot of attention to how I feel.';
 $string['item9'] = 'I am clear about my feelings.';
 $string['item10'] = 'I can often define my feelings.';
-$string['item11'] = 'I almost always know exactly how I feel.';
+$string['item11'] = 'I almost always know how I feel.';
 $string['item12'] = 'I usually know my feelings about people.';
 $string['item13'] = 'I often notice my feelings in different situations.';
 $string['item14'] = 'I can always tell how I feel.';
-$string['item15'] = 'I can sometimes tell what my emotions are.';
-$string['item16'] = 'I can recognize my feelings.';
-$string['item17'] = 'I try to have positive thoughts no matter how bad I feel.';
-$string['item18'] = 'I try to think good thoughts no matter how badly I feel.';
-$string['item19'] = 'When I am sad, I think of all the pleasures in life.';
-$string['item20'] = 'I try to maintain a positive attitude even when I feel bad.';
-$string['item21'] = 'If I give too much thought to things, I complicate them.';
-$string['item22'] = 'I worry too much about what I feel.';
-$string['item23'] = 'I often think that I feel things too intensely.';
-$string['item24'] = 'When I feel negative emotions, I do not express them.';
+$string['item15'] = 'Sometimes I can tell what my emotions are.';
+$string['item16'] = 'I am able to understand my feelings.';
+$string['item17'] = 'Although I may sometimes feel sad, I usually have an optimistic outlook.';
+$string['item18'] = 'Although I feel bad, I try to think about pleasant things.';
+$string['item19'] = 'When I am sad, I think about all the pleasures in life.';
+$string['item20'] = 'I try to have positive thoughts although I feel bad.';
+$string['item21'] = 'If I think too much about things, complicating them, I try to calm down.';
+$string['item22'] = 'I worry about having a good mood.';
+$string['item23'] = 'I have a lot of energy when I feel happy.';
+$string['item24'] = 'When I am angry I try to change my mood.';
 
-// All results page
+// Error messages
+$string['error_saving_test'] = 'An error occurred while saving the test. Please try again.';
+
+// Teacher view strings
+$string['view_all_results'] = 'View All Results';
 $string['all_results_title'] = 'TMMS-24: All Results';
 $string['all_results_heading'] = 'TMMS-24 Dashboard';
 $string['statistics'] = 'Statistics';
@@ -97,9 +124,9 @@ $string['avg_regulation'] = 'Average Regulation';
 $string['download_all_csv'] = 'Download All Results (CSV)';
 $string['user'] = 'User';
 $string['date_completed'] = 'Date Completed';
-$string['no_results_yet'] = 'No results submitted yet.';
+$string['no_results_yet'] = 'No results have been submitted yet.';
 
-// Student results strings  
+// Student results strings
 $string['your_results'] = 'Your Results';
 $string['view_detailed_results'] = 'View Detailed Results';
 
@@ -129,10 +156,6 @@ $string['pending'] = 'Pending';
 $string['of'] = 'of';
 $string['students_completed'] = 'students completed';
 $string['recent_completions'] = 'Recent Completions';
-$string['view_all_results'] = 'View All Results';
-
-// Error messages
-$string['incomplete_data'] = 'The test data is incomplete. Please contact the administrator.';
 
 // Error messages for export
 $string['invalidformat'] = 'Invalid export format.';
@@ -163,51 +186,4 @@ $string['results_for'] = 'Results for';
 $string['back_to_teacher_view'] = 'Back to teacher view';
 $string['student_not_completed'] = 'The student has not completed the test yet.';
 $string['tmms_24_dashboard'] = 'TMMS-24 Dashboard';
-
-// Perception interpretations
-$string['perception_needs_improvement_low'] = 'Must improve (pays little attention)';
-$string['perception_needs_improvement_high'] = 'Must improve (pays too much attention)';
-
-// Form validation and submission
-$string['submit_test'] = 'Submit Test';
-$string['back_to_course'] = 'Back to Course';
-$string['items_completed'] = 'Items completed';
-$string['validation_age_required'] = 'Age is required';
-$string['validation_gender_required'] = 'Gender is required';
-$string['validation_missing_items'] = 'Please answer all questions';
-$string['disclaimer'] = 'This test is for educational purposes only and does not constitute professional psychological assessment.';
-$string['legal_notice'] = 'TMMS-24 scale developed by Salovey, Mayer, Goldman, Turvey, and Palfai (1995).';
-$string['results_for_male'] = 'Results for Male';
-$string['results_for_female'] = 'Results for Female';
-$string['please_answer_item'] = 'Please answer this item';
-$string['validation_required'] = 'Please complete all required fields';
-$string['test_saved_successfully'] = 'Test saved successfully!';
-$string['error_saving_test'] = 'Error saving test. Please try again.';
-
-// Export and dimension strings
-$string['dimension_perception'] = 'Emotional Perception';
-$string['dimension_comprehension'] = 'Emotional Comprehension';
-$string['dimension_regulation'] = 'Emotional Regulation';
-$string['invalid_export_format'] = 'Invalid export format';
-
-// View.php additional strings
-$string['results_for_male'] = 'Results for Male';
-$string['results_for_female'] = 'Results for Female';
-$string['disclaimer'] = 'This test provides a general assessment of emotional intelligence. Results should be interpreted in context.';
-$string['legal_notice'] = 'Based on the TMMS-24 scale by Salovey et al. For educational purposes only.';
-$string['test_completed'] = 'Test Completed Successfully';
-$string['view_full_results'] = 'View Full Results';
-
-// Student results additional strings  
-$string['back_to_teacher_view'] = 'Back to Teacher View';
-$string['results_for'] = 'Results for';
-$string['student_not_completed'] = 'This student has not completed the test yet.';
-$string['date_completed'] = 'Date Completed';
-$string['detailed_responses'] = 'Detailed Responses';
-$string['results_interpretation'] = 'Results Interpretation';
-
-// General strings
-$string['not_determined'] = 'Not determined';
-$string['download'] = 'Download';
-$string['test_already_completed'] = 'You have already completed this test. You can only take it once.';
-$string['student_results'] = 'Student Results';
+$string['needs_improvement'] = 'Needs improvement';

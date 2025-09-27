@@ -17,11 +17,17 @@ if ($courseid == SITEID && !$courseid) {
 $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 $context = context_course::instance($courseid);
 
-// Require capability to view all results to access this script
+// Require capability to view all results to access this script - only teachers/admins
 require_capability('block/tmms_24:viewallresults', $context);
 
-// Fetch all results for the course
-$all_entries = $DB->get_records('tmms_24', array('course' => $courseid), 'created_at DESC');
+$userid = optional_param('userid', 0, PARAM_INT);
+
+// Fetch results - teachers/admins can see all results or specific user if userid provided
+if ($userid > 0) {
+    $all_entries = $DB->get_records('tmms_24', array('course' => $courseid, 'user' => $userid), 'created_at DESC');
+} else {
+    $all_entries = $DB->get_records('tmms_24', array('course' => $courseid), 'created_at DESC');
+}
 
 if (empty($all_entries)) {
     redirect(new moodle_url('/course/view.php', array('id' => $courseid)), 
@@ -64,7 +70,13 @@ foreach ($all_entries as $entry) {
     ];
 }
 
-$filename = 'tmms24_results_course_' . $courseid . '_' . time();
+// Generate appropriate filename
+if ($userid > 0) {
+    $target_user = $DB->get_record('user', ['id' => $userid]);
+    $filename = 'tmms24_results_' . strtolower($target_user->firstname . '_' . $target_user->lastname) . '_' . time();
+} else {
+    $filename = 'tmms24_results_course_' . $courseid . '_' . time();
+}
 
 if ($format == 'csv') {
     header('Content-Type: text/csv');

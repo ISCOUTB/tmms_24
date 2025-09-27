@@ -1,15 +1,15 @@
-# TMMS-24 Block for Moodle
+# TMMS-24 Block for Moodle v2.0.0
 
-A Moodle block plugin that implements the Trait Meta-Mood Scale (TMMS-24) psychological assessment tool.
+A comprehensive Moodle block plugin that implements the Trait Meta-Mood Scale (TMMS-24) psychological assessment tool with complete administrative dashboard.
 
 ## Description
 
-The TMMS-24 is a psychological test that measures emotional intelligence through three dimensions:
+The TMMS-24 is a validated psychological test that measures emotional intelligence through three key dimensions:
 - **Perception**: Ability to perceive and identify emotions
-- **Comprehension**: Ability to understand emotions
-- **Regulation**: Ability to regulate emotions
+- **Comprehension**: Ability to understand emotions and their causes
+- **Regulation**: Ability to regulate and manage emotions effectively
 
-This block provides a complete implementation for Moodle courses with role-based access control.
+This block provides a complete implementation for Moodle courses with advanced administrative capabilities, detailed analytics, and role-based access control.
 
 ## Features
 

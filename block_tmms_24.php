@@ -87,7 +87,11 @@ class TMMS24Facade {
     public static function get_tmms24_items() {
         $items = [];
         for ($i = 1; $i <= 24; $i++) {
-            $items[$i] = get_string('item' . $i, 'block_tmms_24');
+            try {
+                $items[$i] = get_string('item' . $i, 'block_tmms_24');
+            } catch (Exception $e) {
+                $items[$i] = "Item $i (string not found)";
+            }
         }
         return $items;
     }
@@ -258,11 +262,6 @@ class block_tmms_24 extends block_base {
         echo '<a href="' . $url . '" class="btn btn-outline-primary btn-sm btn-block mb-2">';
         echo '<i class="fa fa-chart-bar"></i> ' . get_string('view_detailed_results', 'block_tmms_24');
         echo '</a>';
-        
-        $retake_url = new moodle_url('/blocks/tmms_24/view.php', array('cid' => $COURSE->id));
-        echo '<a href="' . $retake_url . '" class="btn btn-link btn-sm">';
-        echo '<i class="fa fa-redo"></i> ' . get_string('retake_test', 'block_tmms_24');
-        echo '</a>';
         echo '</div>';
         
         echo '</div>';
@@ -306,39 +305,39 @@ class block_tmms_24 extends block_base {
         // Header with brain icon
         echo '<div class="tmms-header text-center mb-3">';
         echo '<i class="fa fa-brain text-primary" style="font-size: 1.5em;"></i>';
-        echo '<h6 class="mt-2 mb-1">' . get_string('emotional_intelligence_test', 'block_tmms_24') . '</h6>';
+        echo '<h6 class="mt-2 mb-1">Emotional Intelligence Test</h6>';
         echo '<small class="text-muted">TMMS-24</small>';
         echo '</div>';
         
         // Test description
         echo '<div class="test-description mb-3">';
-        echo '<p class="small mb-2">' . get_string('test_description_short', 'block_tmms_24') . '</p>';
+        echo '<p class="small mb-2">Assess your ability to perceive, understand and regulate emotions.</p>';
         
         echo '<div class="test-features">';
         echo '<div class="feature-item d-flex align-items-center mb-1">';
         echo '<i class="fa fa-clock text-info mr-2"></i>';
-        echo '<span class="small">' . get_string('duration_5_minutes', 'block_tmms_24') . '</span>';
+        echo '<span class="small">~5 minutes duration</span>';
         echo '</div>';
         
         echo '<div class="feature-item d-flex align-items-center mb-1">';
         echo '<i class="fa fa-list-ol text-info mr-2"></i>';
-        echo '<span class="small">' . get_string('24_questions', 'block_tmms_24') . '</span>';
+        echo '<span class="small">24 questions</span>';
         echo '</div>';
         
         echo '<div class="feature-item d-flex align-items-center mb-1">';
         echo '<i class="fa fa-chart-pie text-info mr-2"></i>';
-        echo '<span class="small">' . get_string('3_dimensions', 'block_tmms_24') . '</span>';
+        echo '<span class="small">3 dimensions assessed</span>';
         echo '</div>';
         echo '</div>';
         echo '</div>';
         
         // What you will discover
         echo '<div class="discover-section mb-3">';
-        echo '<h6 class="small mb-2">' . get_string('what_you_will_discover', 'block_tmms_24') . '</h6>';
+        echo '<h6 class="small mb-2">What you will discover:</h6>';
         echo '<ul class="list-unstyled small">';
-        echo '<li><i class="fa fa-eye text-success mr-1"></i> ' . get_string('perception_ability', 'block_tmms_24') . '</li>';
-        echo '<li><i class="fa fa-lightbulb text-warning mr-1"></i> ' . get_string('comprehension_ability', 'block_tmms_24') . '</li>';
-        echo '<li><i class="fa fa-balance-scale text-info mr-1"></i> ' . get_string('regulation_ability', 'block_tmms_24') . '</li>';
+        echo '<li><i class="fa fa-eye text-success mr-1"></i> Your emotional perception ability</li>';
+        echo '<li><i class="fa fa-lightbulb text-warning mr-1"></i> Your emotional comprehension</li>';
+        echo '<li><i class="fa fa-balance-scale text-info mr-1"></i> Your emotional regulation</li>';
         echo '</ul>';
         echo '</div>';
         
@@ -346,7 +345,7 @@ class block_tmms_24 extends block_base {
         echo '<div class="tmms-actions text-center">';
         $url = new moodle_url('/blocks/tmms_24/view.php', array('cid' => $COURSE->id));
         echo '<a href="' . $url . '" class="btn btn-primary btn-block">';
-        echo '<i class="fa fa-play"></i> ' . get_string('start_test', 'block_tmms_24');
+        echo '<i class="fa fa-play"></i> Start Test';
         echo '</a>';
         echo '</div>';
         

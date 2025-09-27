@@ -61,6 +61,12 @@ $scores = TMMS24Facade::calculate_scores(array_values($responses));
 // Verificar si ya existe un registro para este usuario en este curso
 $existing_entry = $DB->get_record('tmms_24', array('user' => $USER->id, 'course' => $courseid));
 
+// Si ya existe un registro, no permitir retakes
+if ($existing_entry) {
+    redirect(new moodle_url('/blocks/tmms_24/view.php', array('cid' => $courseid, 'view_results' => 1)), 
+             get_string('test_already_completed', 'block_tmms_24'), null, 'info');
+}
+
 $entry = new stdClass();
 $entry->user = $USER->id;
 $entry->course = $courseid;
@@ -78,21 +84,13 @@ $entry->percepcion_score = $scores['percepcion'];
 $entry->comprension_score = $scores['comprension'];
 $entry->regulacion_score = $scores['regulacion'];
 
+$entry->created_at = time();
 $entry->updated_at = time();
 
 try {
-    if ($existing_entry) {
-        // Actualizar registro existente
-        $entry->id = $existing_entry->id;
-        $entry->created_at = $existing_entry->created_at; // Mantener fecha de creación original
-        $DB->update_record('tmms_24', $entry);
-        $message = 'Test actualizado exitosamente.';
-    } else {
-        // Crear nuevo registro
-        $entry->created_at = time();
-        $entry->id = $DB->insert_record('tmms_24', $entry);
-        $message = get_string('test_saved_successfully', 'block_tmms_24');
-    }
+    // Crear nuevo registro (único permitido)
+    $entry->id = $DB->insert_record('tmms_24', $entry);
+    $message = get_string('test_saved_successfully', 'block_tmms_24');
     
     // Generar evento para logging (opcional)
     $event = \core\event\user_updated::create(array(

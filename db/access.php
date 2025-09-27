@@ -57,4 +57,13 @@ $capabilities = array(
         )
     ),
 
+    'block/tmms_24:manageresponses' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        )
+    ),
+
 );
