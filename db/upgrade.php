@@ -7,8 +7,8 @@ function xmldb_block_tmms_24_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2025092321) {
-        // Force capability refresh
-        accesslib_clear_all_caches();
+        // Force capability refresh - use proper cache clearing for upgrades
+        purge_all_caches();
         
         // Update capabilities for all contexts where the block is installed
         $contexts = $DB->get_records_sql("
