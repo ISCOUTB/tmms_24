@@ -209,3 +209,4 @@ $string['not_determined'] = 'No determinado';
 $string['download'] = 'Descargar';
 $string['test_already_completed'] = 'Ya has completado esta prueba. Solo puedes tomarla una vez.';
 $string['student_results'] = 'Resultados del Estudiante';
+$string['response_deleted_success'] = 'Respuesta de {$a} eliminada exitosamente.';
