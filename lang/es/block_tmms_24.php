@@ -13,6 +13,14 @@ $string['take_test'] = 'Realizar Test';
 $string['test_completed'] = 'Test Completado';
 $string['view_full_results'] = 'Ver Resultados Completos';
 $string['not_logged_in'] = 'Debes estar conectado para ver este contenido.';
+$string['emotional_intelligence_test'] = 'Test de Inteligencia Emocional';
+$string['emotional_intelligence_results'] = 'Resultados de Inteligencia Emocional';
+$string['discover_your_emotional_skills'] = 'Descubre tus habilidades emocionales';
+$string['what_is_tmms24'] = '¿Qué es el TMMS-24?';
+$string['feature_24_questions'] = '24 preguntas breves';
+$string['feature_3_dimensions'] = '3 dimensiones evaluadas';
+$string['feature_instant_results'] = 'Resultados inmediatos';
+$string['start_test'] = 'Comenzar Test';
 
 // Etiquetas e instrucciones del formulario
 $string['instructions_title'] = 'Instrucciones del Test';
@@ -112,6 +120,8 @@ $string['test_description_short'] = 'Evalúa tu capacidad para percibir, compren
 $string['duration_5_minutes'] = '~5 minutos de duración';
 $string['24_questions'] = '24 preguntas';
 $string['3_dimensions'] = '3 dimensiones evaluadas';
+$string['questions_24'] = '24 preguntas';
+$string['dimensions_3'] = '3 dimensiones evaluadas';
 $string['what_you_will_discover'] = 'Qué descubrirás:';
 $string['perception_ability'] = 'Tu capacidad de percepción emocional';
 $string['comprehension_ability'] = 'Tu comprensión de emociones';
@@ -210,3 +220,31 @@ $string['download'] = 'Descargar';
 $string['test_already_completed'] = 'Ya has completado esta prueba. Solo puedes tomarla una vez.';
 $string['student_results'] = 'Resultados del Estudiante';
 $string['response_deleted_success'] = 'Respuesta de {$a} eliminada exitosamente.';
+$string['item_not_found'] = 'Ítem {$a} no disponible';
+
+// Cadenas adicionales para teacher_view.php
+$string['statistics'] = 'Estadísticas';
+$string['enrolled_students'] = 'Estudiantes Inscritos';
+$string['total_completed'] = 'Total Completado';
+$string['dimension_statistics'] = 'Estadísticas por Dimensión';
+$string['average_score'] = 'Puntuación Promedio';
+$string['must_improve'] = 'Debe Mejorar';
+$string['error_deleting_response'] = 'Error al eliminar la respuesta';
+$string['no_results_yet'] = 'Aún no hay resultados disponibles';
+
+// Nuevas interpretaciones detalladas TMMS-24
+$string['perception_difficulty_feeling'] = 'Dificultad para sentir/expresar emociones';
+$string['perception_adequate_feeling'] = 'Adecuada capacidad para sentir/expresar';
+$string['perception_excessive_attention'] = 'Atención excesiva que puede generar preocupación';
+$string['comprehension_difficulty_understanding'] = 'Dificultad para comprender/diferenciar emociones';
+$string['comprehension_adequate_with_difficulties'] = 'Capacidad adecuada, con posibles dificultades';
+$string['comprehension_great_clarity'] = 'Gran claridad emocional';
+$string['regulation_difficulty_managing'] = 'Dificultad para gestionar emociones y recuperarse';
+$string['regulation_adequate_balance'] = 'Regulación adecuada, equilibrio emocional';
+$string['regulation_great_capacity'] = 'Gran capacidad para manejar negativos y potenciar positivos';
+
+// Etiquetas para estadísticas
+$string['difficulty_category'] = 'Dificultades';
+$string['adequate_category'] = 'Adecuado';
+$string['excellent_category'] = 'Excelente';
+$string['excessive_category'] = 'Excesivo';

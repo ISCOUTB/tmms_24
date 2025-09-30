@@ -61,13 +61,10 @@ if (!$result) {
     echo '<div class="card-body text-center">';
     echo '<h5>' . get_string('perception', 'block_tmms_24') . '</h5>';
     echo '<h3 class="text-primary">' . $scores['percepcion'] . '/40</h3>';
-    // Handle different gender interpretation structures
-    $percepcion_interp = isset($interpretations['result']) ? $interpretations['result']['percepcion'] : 
-                        $interpretations[array_keys($interpretations)[0]]['percepcion'];
-    $comprension_interp = isset($interpretations['result']) ? $interpretations['result']['comprension'] : 
-                         $interpretations[array_keys($interpretations)[0]]['comprension'];
-    $regulacion_interp = isset($interpretations['result']) ? $interpretations['result']['regulacion'] : 
-                        $interpretations[array_keys($interpretations)[0]]['regulacion'];
+    // Get interpretations directly from the array
+    $percepcion_interp = $interpretations['percepcion'];
+    $comprension_interp = $interpretations['comprension'];
+    $regulacion_interp = $interpretations['regulacion'];
     
     echo '<p class="mb-0">' . $percepcion_interp . '</p>';
     echo '</div>';
@@ -169,26 +166,12 @@ if (!$result) {
     echo '</div>';
     echo '<div class="card-body">';
     
-    if (isset($interpretations['result'])) {
-        // Single gender interpretation
-        echo '<div class="row">';
-        echo '<div class="col-md-4"><strong>' . get_string('perception', 'block_tmms_24') . ':</strong><br>' . $interpretations['result']['percepcion'] . '</div>';
-        echo '<div class="col-md-4"><strong>' . get_string('comprehension', 'block_tmms_24') . ':</strong><br>' . $interpretations['result']['comprension'] . '</div>';
-        echo '<div class="col-md-4"><strong>' . get_string('regulation', 'block_tmms_24') . ':</strong><br>' . $interpretations['result']['regulacion'] . '</div>';
-        echo '</div>';
-    } else {
-        // Multiple gender interpretations
-        foreach ($interpretations as $gender_label => $gender_results) {
-            echo '<div class="mb-3">';
-            echo '<h6>' . $gender_label . '</h6>';
-            echo '<div class="row">';
-            echo '<div class="col-md-4"><strong>' . get_string('perception', 'block_tmms_24') . ':</strong><br>' . $gender_results['percepcion'] . '</div>';
-            echo '<div class="col-md-4"><strong>' . get_string('comprehension', 'block_tmms_24') . ':</strong><br>' . $gender_results['comprension'] . '</div>';
-            echo '<div class="col-md-4"><strong>' . get_string('regulation', 'block_tmms_24') . ':</strong><br>' . $gender_results['regulacion'] . '</div>';
-            echo '</div>';
-            echo '</div>';
-        }
-    }
+    // Display interpretations directly
+    echo '<div class="row">';
+    echo '<div class="col-md-4"><strong>' . get_string('perception', 'block_tmms_24') . ':</strong><br>' . $interpretations['percepcion'] . '</div>';
+    echo '<div class="col-md-4"><strong>' . get_string('comprehension', 'block_tmms_24') . ':</strong><br>' . $interpretations['comprension'] . '</div>';
+    echo '<div class="col-md-4"><strong>' . get_string('regulation', 'block_tmms_24') . ':</strong><br>' . $interpretations['regulacion'] . '</div>';
+    echo '</div>';
     
     echo '</div>';
     echo '</div>';

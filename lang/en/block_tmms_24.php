@@ -13,6 +13,14 @@ $string['take_test'] = 'Take Test';
 $string['test_completed'] = 'Test Completed';
 $string['view_full_results'] = 'View Full Results';
 $string['not_logged_in'] = 'You must be logged in to view this content.';
+$string['emotional_intelligence_test'] = 'Emotional Intelligence Test';
+$string['emotional_intelligence_results'] = 'Emotional Intelligence Results';
+$string['discover_your_emotional_skills'] = 'Discover your emotional skills';
+$string['what_is_tmms24'] = 'What is TMMS-24?';
+$string['feature_24_questions'] = '24 brief questions';
+$string['feature_3_dimensions'] = '3 evaluated dimensions';
+$string['feature_instant_results'] = 'Instant results';
+$string['start_test'] = 'Start Test';
 
 // Form labels and instructions
 $string['instructions_title'] = 'Test Instructions';
@@ -112,6 +120,8 @@ $string['test_description_short'] = 'Assess your ability to perceive, understand
 $string['duration_5_minutes'] = '~5 minutes duration';
 $string['24_questions'] = '24 questions';
 $string['3_dimensions'] = '3 dimensions assessed';
+$string['questions_24'] = '24 questions';
+$string['dimensions_3'] = '3 dimensions assessed';
 $string['what_you_will_discover'] = 'What you will discover:';
 $string['perception_ability'] = 'Your emotional perception ability';
 $string['comprehension_ability'] = 'Your emotional comprehension';
@@ -191,8 +201,6 @@ $string['dimension_regulation'] = 'Emotional Regulation';
 $string['invalid_export_format'] = 'Invalid export format';
 
 // View.php additional strings
-$string['results_for_male'] = 'Results for Male';
-$string['results_for_female'] = 'Results for Female';
 $string['disclaimer'] = 'This test provides a general assessment of emotional intelligence. Results should be interpreted in context.';
 $string['legal_notice'] = 'Based on the TMMS-24 scale by Salovey et al. For educational purposes only.';
 $string['test_completed'] = 'Test Completed Successfully';
@@ -211,3 +219,32 @@ $string['not_determined'] = 'Not determined';
 $string['download'] = 'Download';
 $string['test_already_completed'] = 'You have already completed this test. You can only take it once.';
 $string['student_results'] = 'Student Results';
+$string['item_not_found'] = 'Item {$a} not available';
+$string['response_deleted_success'] = 'Response from {$a} deleted successfully.';
+
+// Additional strings for teacher_view.php
+$string['statistics'] = 'Statistics';
+$string['enrolled_students'] = 'Enrolled Students';
+$string['total_completed'] = 'Total Completed';
+$string['dimension_statistics'] = 'Statistics by Dimension';
+$string['average_score'] = 'Average Score';
+$string['must_improve'] = 'Must Improve';
+$string['error_deleting_response'] = 'Error deleting response';
+$string['no_results_yet'] = 'No results available yet';
+
+// New detailed TMMS-24 interpretations
+$string['perception_difficulty_feeling'] = 'Difficulty feeling/expressing emotions';
+$string['perception_adequate_feeling'] = 'Adequate capacity to feel/express';
+$string['perception_excessive_attention'] = 'Excessive attention that may generate worry';
+$string['comprehension_difficulty_understanding'] = 'Difficulty understanding/differentiating emotions';
+$string['comprehension_adequate_with_difficulties'] = 'Adequate capacity, with possible difficulties';
+$string['comprehension_great_clarity'] = 'Great emotional clarity';
+$string['regulation_difficulty_managing'] = 'Difficulty managing emotions and recovering';
+$string['regulation_adequate_balance'] = 'Adequate regulation, emotional balance';
+$string['regulation_great_capacity'] = 'Great capacity to manage negatives and enhance positives';
+
+// Labels for statistics
+$string['difficulty_category'] = 'Difficulties';
+$string['adequate_category'] = 'Adequate';
+$string['excellent_category'] = 'Excellent';
+$string['excessive_category'] = 'Excessive';

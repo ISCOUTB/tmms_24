@@ -48,61 +48,130 @@ if ($entry && $view_results) {
     echo "<div class='tmms-results-container'>";
     echo "<h2>" . get_string('results_title', 'block_tmms_24') . "</h2>";
     
-    echo "<div class='results-summary'>";
-    echo "<table class='table table-striped'>";
-    echo "<thead>";
-    echo "<tr>";
-    echo "<th>" . get_string('dimension', 'block_tmms_24') . "</th>";
-    echo "<th>" . get_string('score', 'block_tmms_24') . "</th>";
-    echo "<th>" . get_string('interpretation', 'block_tmms_24') . "</th>";
-    echo "</tr>";
-    echo "</thead>";
-    echo "<tbody>";
+    // Header with student name
+    echo '<div class="mb-4">';
+    echo '<h4 class="mb-0">' . get_string('results_for', 'block_tmms_24') . ' ' . fullname($USER) . '</h4>';
+    echo '</div>';
     
-    if ($entry->gender === 'prefiero_no_decir') {
-        // Mostrar ambas interpretaciones
-        foreach (['Hombre', 'Mujer'] as $gender_label) {
-            echo "<tr><td colspan='3'><strong>" . get_string('results_for_' . strtolower($gender_label === 'Hombre' ? 'male' : 'female'), 'block_tmms_24') . "</strong></td></tr>";
-            echo "<tr>";
-            echo "<td>" . get_string('perception', 'block_tmms_24') . "</td>";
-            echo "<td>" . $scores['percepcion'] . "</td>";
-            echo "<td>" . $interpretations[$gender_label]['percepcion'] . "</td>";
-            echo "</tr>";
-            echo "<tr>";
-            echo "<td>" . get_string('comprehension', 'block_tmms_24') . "</td>";
-            echo "<td>" . $scores['comprension'] . "</td>";
-            echo "<td>" . $interpretations[$gender_label]['comprension'] . "</td>";
-            echo "</tr>";
-            echo "<tr>";
-            echo "<td>" . get_string('regulation', 'block_tmms_24') . "</td>";
-            echo "<td>" . $scores['regulacion'] . "</td>";
-            echo "<td>" . $interpretations[$gender_label]['regulacion'] . "</td>";
-            echo "</tr>";
+    // Display results summary with cards (like student_results.php)
+    echo '<div class="row mb-4">';
+    echo '<div class="col-md-4">';
+    echo '<div class="card border-primary">';
+    echo '<div class="card-body text-center">';
+    echo '<h5>' . get_string('perception', 'block_tmms_24') . '</h5>';
+    echo '<h3 class="text-primary">' . $scores['percepcion'] . '/40</h3>';
+    echo '<p class="mb-0">' . $interpretations['percepcion'] . '</p>';
+    echo '</div>';
+    echo '</div>';
+    echo '</div>';
+
+    echo '<div class="col-md-4">';
+    echo '<div class="card border-info">';
+    echo '<div class="card-body text-center">';
+    echo '<h5>' . get_string('comprehension', 'block_tmms_24') . '</h5>';
+    echo '<h3 class="text-info">' . $scores['comprension'] . '/40</h3>';
+    echo '<p class="mb-0">' . $interpretations['comprension'] . '</p>';
+    echo '</div>';
+    echo '</div>';
+    echo '</div>';
+
+    echo '<div class="col-md-4">';
+    echo '<div class="card border-success">';
+    echo '<div class="card-body text-center">';
+    echo '<h5>' . get_string('regulation', 'block_tmms_24') . '</h5>';
+    echo '<h3 class="text-success">' . $scores['regulacion'] . '/40</h3>';
+    echo '<p class="mb-0">' . $interpretations['regulacion'] . '</p>';
+    echo '</div>';
+    echo '</div>';
+    echo '</div>';
+    echo '</div>';
+
+    // Test completion info
+    echo '<div class="row mb-4">';
+    echo '<div class="col-md-6">';
+    echo '<strong>' . get_string('date_completed', 'block_tmms_24') . ':</strong> ';
+    echo userdate($entry->created_at, get_string('strftimedatetimeshort'));
+    echo '</div>';
+    echo '<div class="col-md-6">';
+    echo '<strong>' . get_string('gender', 'block_tmms_24') . ':</strong> ';
+    
+    // Convert gender code to display string
+    $gender_display = '';
+    switch($entry->gender) {
+        case 'M':
+            $gender_display = get_string('gender_male', 'block_tmms_24');
+            break;
+        case 'F':
+            $gender_display = get_string('gender_female', 'block_tmms_24');
+            break;
+        case 'prefiero_no_decir':
+            $gender_display = get_string('gender_prefer_not_say', 'block_tmms_24');
+            break;
+        default:
+            $gender_display = $entry->gender; // fallback
+    }
+    echo $gender_display;
+    echo '</div>';
+    echo '</div>';
+
+    // Detailed responses
+    echo '<h5>' . get_string('detailed_responses', 'block_tmms_24') . '</h5>';
+    
+    $dimensions = [
+        'perception' => range(1, 8),
+        'comprehension' => range(9, 16), 
+        'regulation' => range(17, 24)
+    ];
+
+    foreach ($dimensions as $dimension => $items) {
+        echo '<div class="card mb-3">';
+        echo '<div class="card-header">';
+        echo '<h6 class="mb-0">' . get_string($dimension, 'block_tmms_24') . '</h6>';
+        echo '</div>';
+        echo '<div class="card-body">';
+        echo '<div class="table-responsive">';
+        echo '<table class="table table-sm">';
+        
+        foreach ($items as $item_num) {
+            $item_key = 'item' . $item_num;
+            $response_value = $entry->$item_key;
+            
+            echo '<tr>';
+            echo '<td style="width: 60px;"><strong>' . $item_num . '.</strong></td>';
+            echo '<td>' . get_string('item' . $item_num, 'block_tmms_24') . '</td>';
+            echo '<td style="width: 100px;" class="text-center">';
+            echo '<span class="badge badge-' . ($response_value >= 4 ? 'success' : ($response_value >= 3 ? 'warning' : 'danger')) . '">';
+            echo $response_value . '/5';
+            echo '</span>';
+            echo '</td>';
+            echo '</tr>';
         }
-    } else {
-        echo "<tr>";
-        echo "<td>" . get_string('perception', 'block_tmms_24') . "</td>";
-        echo "<td>" . $scores['percepcion'] . "</td>";
-        echo "<td>" . $interpretations['result']['percepcion'] . "</td>";
-        echo "</tr>";
-        echo "<tr>";
-        echo "<td>" . get_string('comprehension', 'block_tmms_24') . "</td>";
-        echo "<td>" . $scores['comprension'] . "</td>";
-        echo "<td>" . $interpretations['result']['comprension'] . "</td>";
-        echo "</tr>";
-        echo "<tr>";
-        echo "<td>" . get_string('regulation', 'block_tmms_24') . "</td>";
-        echo "<td>" . $scores['regulacion'] . "</td>";
-        echo "<td>" . $interpretations['result']['regulacion'] . "</td>";
-        echo "</tr>";
+        
+        echo '</table>';
+        echo '</div>';
+        echo '</div>';
+        echo '</div>';
     }
     
-    echo "</tbody>";
-    echo "</table>";
-    echo "</div>";
+    // Interpretation section
+    echo '<div class="card">';
+    echo '<div class="card-header">';
+    echo '<h5 class="mb-0">' . get_string('results_interpretation', 'block_tmms_24') . '</h5>';
+    echo '</div>';
+    echo '<div class="card-body">';
+    
+    // Display interpretations directly
+    echo '<div class="row">';
+    echo '<div class="col-md-4"><strong>' . get_string('perception', 'block_tmms_24') . ':</strong><br>' . $interpretations['percepcion'] . '</div>';
+    echo '<div class="col-md-4"><strong>' . get_string('comprehension', 'block_tmms_24') . ':</strong><br>' . $interpretations['comprension'] . '</div>';
+    echo '<div class="col-md-4"><strong>' . get_string('regulation', 'block_tmms_24') . ':</strong><br>' . $interpretations['regulacion'] . '</div>';
+    echo '</div>';
+    
+    echo '</div>';
+    echo '</div>';
     
     // Botones de acción
-    echo "<div class='results-actions'>";
+    echo "<div class='results-actions mt-4'>";
     
     // Solo profesores/administradores pueden descargar resultados
     if (has_capability('block/tmms_24:viewallresults', context_course::instance($courseid))) {

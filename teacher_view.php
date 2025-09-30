@@ -94,9 +94,9 @@ if (!empty($results)) {
     // Average scores statistics
     $avg_scores = ['percepcion' => 0, 'comprension' => 0, 'regulacion' => 0];
     $score_distributions = [
-        'percepcion' => ['must_improve' => 0, 'adequate' => 0, 'excellent' => 0],
-        'comprension' => ['must_improve' => 0, 'adequate' => 0, 'excellent' => 0],
-        'regulacion' => ['must_improve' => 0, 'adequate' => 0, 'excellent' => 0]
+        'percepcion' => ['difficulty' => 0, 'adequate' => 0, 'excellent_excessive' => 0],
+        'comprension' => ['difficulty' => 0, 'adequate' => 0, 'excellent' => 0],
+        'regulacion' => ['difficulty' => 0, 'adequate' => 0, 'excellent' => 0]
     ];
     
     foreach ($results as $result) {
@@ -115,23 +115,21 @@ if (!empty($results)) {
         
         // Count interpretations for distribution
         foreach (['percepcion', 'comprension', 'regulacion'] as $dimension) {
-            // Handle different gender interpretation structures
-            $interp = '';
-            if (isset($interpretations['result'])) {
-                $interp = $interpretations['result'][$dimension];
-            } else {
-                // For 'prefiero_no_decir', use the first available interpretation
-                $first_key = array_keys($interpretations)[0];
-                $interp = $interpretations[$first_key][$dimension];
-            }
+            // Get interpretation directly from the array
+            $interp = $interpretations[$dimension];
             
-            if (strpos($interp, get_string('needs_improvement', 'block_tmms_24')) !== false || 
-                strpos($interp, 'debe mejorar') !== false) {
-                $score_distributions[$dimension]['must_improve']++;
-            } elseif (strpos($interp, get_string('excellent', 'block_tmms_24')) !== false ||
-                     strpos($interp, 'excelente') !== false) {
+            // Categorizar según las nuevas interpretaciones
+            if (strpos($interp, get_string('perception_difficulty_feeling', 'block_tmms_24')) !== false ||
+                strpos($interp, get_string('comprehension_difficulty_understanding', 'block_tmms_24')) !== false ||
+                strpos($interp, get_string('regulation_difficulty_managing', 'block_tmms_24')) !== false) {
+                $score_distributions[$dimension]['difficulty']++;
+            } elseif (strpos($interp, get_string('perception_excessive_attention', 'block_tmms_24')) !== false) {
+                $score_distributions[$dimension]['excellent_excessive']++; // Para percepción, excesiva atención
+            } elseif (strpos($interp, get_string('comprehension_great_clarity', 'block_tmms_24')) !== false ||
+                     strpos($interp, get_string('regulation_great_capacity', 'block_tmms_24')) !== false) {
                 $score_distributions[$dimension]['excellent']++;
             } else {
+                // Capacidad adecuada (todas las dimensiones)
                 $score_distributions[$dimension]['adequate']++;
             }
         }
@@ -171,9 +169,17 @@ if (!empty($results)) {
         echo '<div class="progress-bar bg-primary" style="width: ' . $progress_width . '%"></div>';
         echo '</div>';
         echo '<small class="text-muted">';
-        echo get_string('excellent', 'block_tmms_24') . ': ' . $distribution['excellent'] . ' | ';
-        echo get_string('adequate', 'block_tmms_24') . ': ' . $distribution['adequate'] . ' | ';
-        echo get_string('must_improve', 'block_tmms_24') . ': ' . $distribution['must_improve'];
+        if ($dim_key === 'percepcion') {
+            // Para percepción: dificultad, adecuado, excesivo
+            echo get_string('difficulty_category', 'block_tmms_24') . ': ' . $distribution['difficulty'] . ' | ';
+            echo get_string('adequate_category', 'block_tmms_24') . ': ' . $distribution['adequate'] . ' | ';
+            echo get_string('excessive_category', 'block_tmms_24') . ': ' . $distribution['excellent_excessive'];
+        } else {
+            // Para comprensión y regulación: dificultad, adecuado, excelente
+            echo get_string('difficulty_category', 'block_tmms_24') . ': ' . $distribution['difficulty'] . ' | ';
+            echo get_string('adequate_category', 'block_tmms_24') . ': ' . $distribution['adequate'] . ' | ';
+            echo get_string('excellent_category', 'block_tmms_24') . ': ' . $distribution['excellent'];
+        }
         echo '</small>';
         echo '</div>';
         echo '</div>';
