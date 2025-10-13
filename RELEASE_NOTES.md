@@ -1,5 +1,13 @@
 # TMMS-24 Block - Release 2.0.0
 
+## Release 2.2.3 — 2025-10-13
+
+Bugfix release
+
+- Fixed CSV export bug where score and interpretation columns remained empty when the facade returned Spanish keys. Now the export supports both Spanish and English keys and handles missing fields safely.
+- Minor robustness improvements to export script and protections against empty datasets.
+
+
 ## 🚀 Major Release - Complete Administrative Dashboard
 
 ### 🎯 New Features
