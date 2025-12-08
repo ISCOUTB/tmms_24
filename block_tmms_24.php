@@ -185,7 +185,7 @@ class block_tmms_24 extends block_base {
         
         // Header with success icon
         $output .= '<div class="tmms-header text-center mb-3">';
-        $output .= '<i class="fa fa-brain text-success" style="font-size: 2em;"></i>';
+        $output .= '<i class="fa fa-check-circle text-success" style="font-size: 1.5em;"></i>';
         $output .= '<h6 class="mt-2 mb-1">' . get_string('test_completed', 'block_tmms_24') . '</h6>';
         $output .= '<small class="text-muted">' . get_string('emotional_intelligence_results', 'block_tmms_24') . '</small>';
         $output .= '</div>';
@@ -286,14 +286,14 @@ class block_tmms_24 extends block_base {
     }
     
     private function get_test_invitation() {
-        global $COURSE;
+        global $COURSE, $USER;
         
         $output = '';
         $output .= '<div class="tmms-invitation-block">';
         
-        // Header with brain icon
+        // Header with heart icon (emotional intelligence)
         $output .= '<div class="tmms-header text-center mb-3">';
-        $output .= '<i class="fa fa-brain text-primary" style="font-size: 2em;"></i>';
+        $output .= '<i class="fa fa-heart text-primary" style="font-size: 1.8em;"></i>';
         $output .= '<h6 class="mt-2 mb-1">' . get_string('emotional_intelligence_test', 'block_tmms_24') . '</h6>';
         $output .= '<small class="text-muted">' . get_string('discover_your_emotional_skills', 'block_tmms_24') . '</small>';
         $output .= '</div>';
@@ -316,15 +316,54 @@ class block_tmms_24 extends block_base {
         $output .= '</div>';
         $output .= '</div>';
         
-        // Action button
+        // Action button - detectar si hay borrador
         $output .= '<div class="tmms-actions text-center">';
+        $output .= '<div id="tmms-button-container">';
         $url = new moodle_url('/blocks/tmms_24/view.php', array('cid' => $COURSE->id));
-        $output .= '<a href="' . $url . '" class="btn btn-primary btn-block">';
-        $output .= '<i class="fa fa-rocket"></i> ' . get_string('start_test', 'block_tmms_24');
+        $output .= '<a href="' . $url . '" class="btn btn-primary btn-block" id="tmms-start-btn">';
+        $output .= '<i class="fa fa-rocket"></i> <span id="tmms-btn-text">' . get_string('start_test', 'block_tmms_24') . '</span>';
         $output .= '</a>';
+        $output .= '</div>';
         $output .= '</div>';
         
         $output .= '</div>';
+        
+        // JavaScript para detectar borrador y cambiar texto del botón
+        $output .= '<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var draftKey = "tmms24_draft_' . $COURSE->id . '";
+            var savedDraft = localStorage.getItem(draftKey);
+            
+            if (savedDraft) {
+                try {
+                    var data = JSON.parse(savedDraft);
+                    var hasData = Object.keys(data).length > 0;
+                    
+                    if (hasData) {
+                        // Cambiar texto del botón a "Continuar Test"
+                        var btnText = document.getElementById("tmms-btn-text");
+                        var btnIcon = document.querySelector("#tmms-start-btn i");
+                        
+                        if (btnText) {
+                            btnText.textContent = "' . get_string('continue_test', 'block_tmms_24') . '";
+                        }
+                        if (btnIcon) {
+                            btnIcon.className = "fa fa-play-circle";
+                        }
+                        
+                        // Opcional: cambiar color del botón
+                        var btn = document.getElementById("tmms-start-btn");
+                        if (btn) {
+                            btn.classList.remove("btn-primary");
+                            btn.classList.add("btn-success");
+                        }
+                    }
+                } catch(e) {
+                    // Si hay error parseando, ignorar
+                }
+            }
+        });
+        </script>';
         
         // Add custom CSS for invitation
         $output .= '<style>
@@ -343,10 +382,19 @@ class block_tmms_24 extends block_base {
         .tmms-actions .btn {
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             font-weight: 500;
+            transition: all 0.3s ease;
         }
         .tmms-actions .btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .tmms-actions .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .tmms-actions .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
         }
         </style>';
         
