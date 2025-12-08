@@ -248,3 +248,9 @@ $string['difficulty_category'] = 'Difficulties';
 $string['adequate_category'] = 'Adequate';
 $string['excellent_category'] = 'Excellent';
 $string['excessive_category'] = 'Excessive';
+
+// Draft and auto-save
+$string['draft_found'] = 'Draft Found';
+$string['draft_found_message'] = 'We found saved answers from a previous session. Your progress has been restored automatically.';
+$string['confirm_exit'] = 'You have unsaved changes. Are you sure you want to leave?';
+$string['continue_test'] = 'Continue Test';
