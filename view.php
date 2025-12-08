@@ -223,6 +223,12 @@ if ($entry && $view_results) {
     echo "</div>";
     echo "</div>";
     
+    // Mensaje de continuación si hay borrador
+    echo "<div id='continueDraftMessage' class='alert alert-info' style='display:none;'>";
+    echo "<strong>" . get_string('draft_found', 'block_tmms_24') . "</strong><br>";
+    echo get_string('draft_found_message', 'block_tmms_24');
+    echo "</div>";
+    
     // Formulario
     echo "<form method='POST' action='" . $CFG->wwwroot . "/blocks/tmms_24/save.php' class='tmms-form' id='tmmsForm'>";
     echo "<input type='hidden' name='cid' value='" . $courseid . "'>";
@@ -234,11 +240,11 @@ if ($entry && $view_results) {
     echo "<div class='form-row'>";
     echo "<div class='form-group'>";
     echo "<label for='age'>" . get_string('age', 'block_tmms_24') . " *</label>";
-    echo "<input type='number' id='age' name='age' class='form-control' min='10' max='100' required>";
+    echo "<input type='number' id='age' name='age' class='form-control' min='10' max='100'>";
     echo "</div>";
     echo "<div class='form-group'>";
     echo "<label for='gender'>" . get_string('gender', 'block_tmms_24') . " *</label>";
-    echo "<select id='gender' name='gender' class='form-control' required>";
+    echo "<select id='gender' name='gender' class='form-control'>";
     echo "<option value=''>Seleccione...</option>";
     echo "<option value='M'>" . get_string('gender_male', 'block_tmms_24') . "</option>";
     echo "<option value='F'>" . get_string('gender_female', 'block_tmms_24') . "</option>";
@@ -262,7 +268,7 @@ if ($entry && $view_results) {
     
     $items = TMMS24Facade::get_tmms24_items();
     foreach ($items as $number => $text) {
-        echo "<div class='question-item' data-item='" . $number . "'>";
+        echo "<div class='question-item' data-item='" . $number . "' id='question-" . $number . "'>";
         echo "<div class='question-header'>";
         echo "<span class='question-number'>" . $number . ".</span>";
         echo "<span class='question-text'>" . $text . "</span>";
@@ -270,23 +276,14 @@ if ($entry && $view_results) {
         echo "<div class='likert-scale'>";
         for ($i = 1; $i <= 5; $i++) {
             echo "<label class='likert-option'>";
-            echo "<input type='radio' name='item" . $number . "' value='" . $i . "' required>";
+            echo "<input type='radio' name='item" . $number . "' value='" . $i . "'>";
             echo "<span class='likert-label'>" . $i . "</span>";
             echo "</label>";
         }
         echo "</div>";
-        echo "<div class='validation-error' id='error-item" . $number . "' style='display: none;'>";
-        echo get_string('please_answer_item', 'block_tmms_24');
-        echo "</div>";
         echo "</div>";
     }
     
-    echo "</div>";
-    
-    // Mensaje de validación general
-    echo "<div class='validation-summary' id='validationSummary' style='display: none;'>";
-    echo "<p>" . get_string('validation_required', 'block_tmms_24') . "</p>";
-    echo "<div id='missingItems'></div>";
     echo "</div>";
     
     // Botón de envío
@@ -309,9 +306,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressText = document.getElementById('progressText');
     
     if (form) {
+        let formAttempted = false;
+        
         // Progreso y guardado local
         updateProgress();
-        loadFromLocalStorage();
+        const hasDraft = loadFromLocalStorage();
+        
+        // Mostrar mensaje de continuación si hay borrador
+        if (hasDraft) {
+            const continueMsg = document.getElementById('continueDraftMessage');
+            if (continueMsg) {
+                continueMsg.style.display = 'block';
+            }
+        }
         
         // Event listeners para los radios
         const radios = form.querySelectorAll('input[type=\"radio\"]');
@@ -319,19 +326,63 @@ document.addEventListener('DOMContentLoaded', function() {
             radio.addEventListener('change', function() {
                 updateProgress();
                 saveToLocalStorage();
-                // Limpiar error de validación
-                const itemNumber = this.name.replace('item', '');
-                const errorDiv = document.getElementById('error-item' + itemNumber);
-                if (errorDiv) {
-                    errorDiv.style.display = 'none';
+                
+                // Remover clase de error visual si se responde
+                if (formAttempted) {
+                    const itemNumber = this.name.replace('item', '');
+                    const questionDiv = document.getElementById('question-' + itemNumber);
+                    if (questionDiv) {
+                        questionDiv.classList.remove('unanswered');
+                    }
                 }
             });
         });
         
         // Validación del formulario
         form.addEventListener('submit', function(e) {
+            formAttempted = true;
+            
             if (!validateForm()) {
                 e.preventDefault();
+                
+                // Marcar visualmente demografía
+                const ageInput = document.getElementById('age');
+                const genderSelect = document.getElementById('gender');
+                
+                if (!ageInput.value) {
+                    ageInput.classList.add('invalid');
+                } else {
+                    ageInput.classList.remove('invalid');
+                }
+                
+                if (!genderSelect.value) {
+                    genderSelect.classList.add('invalid');
+                } else {
+                    genderSelect.classList.remove('invalid');
+                }
+                
+                // Marcar visualmente las preguntas sin responder
+                for (let i = 1; i <= 24; i++) {
+                    const checked = form.querySelector('input[name=\"item' + i + '\"]:checked');
+                    const questionDiv = document.getElementById('question-' + i);
+                    
+                    if (!checked && questionDiv) {
+                        questionDiv.classList.add('unanswered');
+                    } else if (questionDiv) {
+                        questionDiv.classList.remove('unanswered');
+                    }
+                }
+                
+                // Scroll al primer campo inválido
+                const firstInvalidDemo = document.querySelector('#age.invalid, #gender.invalid');
+                const firstUnanswered = document.querySelector('.question-item.unanswered');
+                
+                if (firstInvalidDemo) {
+                    firstInvalidDemo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else if (firstUnanswered) {
+                    firstUnanswered.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                
                 return false;
             }
             // Limpiar localStorage al enviar
@@ -343,10 +394,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const genderSelect = document.getElementById('gender');
         
         if (ageInput) {
-            ageInput.addEventListener('input', saveToLocalStorage);
+            ageInput.addEventListener('input', function() {
+                saveToLocalStorage();
+                if (formAttempted && this.value) {
+                    this.classList.remove('invalid');
+                }
+            });
         }
         if (genderSelect) {
-            genderSelect.addEventListener('change', saveToLocalStorage);
+            genderSelect.addEventListener('change', function() {
+                saveToLocalStorage();
+                if (formAttempted && this.value) {
+                    this.classList.remove('invalid');
+                }
+            });
         }
     }
     
@@ -365,49 +426,23 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function validateForm() {
         let isValid = true;
-        const missingItems = [];
         
         // Validar datos demográficos
-        const age = document.getElementById('age').value;
-        const gender = document.getElementById('gender').value;
+        const age = document.getElementById('age');
+        const gender = document.getElementById('gender');
         
-        if (!age) {
-            alert('" . get_string('validation_age_required', 'block_tmms_24') . "');
-            return false;
+        if (!age.value) {
+            isValid = false;
         }
-        if (!gender) {
-            alert('" . get_string('validation_gender_required', 'block_tmms_24') . "');
-            return false;
+        if (!gender.value) {
+            isValid = false;
         }
         
         // Validar todos los ítems
         for (let i = 1; i <= 24; i++) {
-            const radios = form.querySelectorAll('input[name=\"item' + i + '\"]');
             const checked = form.querySelector('input[name=\"item' + i + '\"]:checked');
-            
             if (!checked) {
                 isValid = false;
-                missingItems.push(i);
-                const errorDiv = document.getElementById('error-item' + i);
-                if (errorDiv) {
-                    errorDiv.style.display = 'block';
-                }
-            }
-        }
-        
-        if (!isValid) {
-            const validationSummary = document.getElementById('validationSummary');
-            const missingItemsDiv = document.getElementById('missingItems');
-            
-            if (validationSummary && missingItemsDiv) {
-                missingItemsDiv.innerHTML = '" . get_string('validation_missing_items', 'block_tmms_24') . " ' + missingItems.join(', ');
-                validationSummary.style.display = 'block';
-                validationSummary.scrollIntoView({ behavior: 'smooth' });
-            }
-        } else {
-            const validationSummary = document.getElementById('validationSummary');
-            if (validationSummary) {
-                validationSummary.style.display = 'none';
             }
         }
         
@@ -439,7 +474,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             updateProgress();
+            return true; // Indica que había borrador
         }
+        return false; // No había borrador
     }
     
     function clearLocalStorage() {
