@@ -225,7 +225,7 @@ if ($entry && $view_results) {
     
     // Mensaje de continuación si hay borrador
     echo "<div id='continueDraftMessage' class='alert alert-info' style='display:none;'>";
-    echo "<strong>📝 " . get_string('draft_found', 'block_tmms_24') . "</strong><br>";
+    echo "<strong>" . get_string('draft_found', 'block_tmms_24') . "</strong><br>";
     echo get_string('draft_found_message', 'block_tmms_24');
     echo "</div>";
     
