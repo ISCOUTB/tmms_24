@@ -254,7 +254,7 @@ class block_tmms_24 extends block_base {
         $output .= '<style>
         .tmms-results-block {
             padding: 15px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background: white;
             border-radius: 8px;
             border: 1px solid #dee2e6;
         }
@@ -293,7 +293,7 @@ class block_tmms_24 extends block_base {
         
         // Header with heart icon (emotional intelligence)
         $output .= '<div class="tmms-header text-center mb-3">';
-        $output .= '<i class="fa fa-heart text-primary" style="font-size: 1.8em;"></i>';
+        $output .= '<i class="fa fa-smile-o" style="font-size: 2em; color: #e91e63;"></i>';
         $output .= '<h6 class="mt-2 mb-1">' . get_string('emotional_intelligence_test', 'block_tmms_24') . '</h6>';
         $output .= '<small class="text-muted">' . get_string('discover_your_emotional_skills', 'block_tmms_24') . '</small>';
         $output .= '</div>';
@@ -320,7 +320,7 @@ class block_tmms_24 extends block_base {
         $output .= '<div class="tmms-actions text-center">';
         $output .= '<div id="tmms-button-container">';
         $url = new moodle_url('/blocks/tmms_24/view.php', array('cid' => $COURSE->id));
-        $output .= '<a href="' . $url . '" class="btn btn-primary btn-block" id="tmms-start-btn">';
+        $output .= '<a href="' . $url . '" class="btn btn-primary btn-block" id="tmms-start-btn" style="background-color: #e91e63; border-color: #e91e63;">';
         $output .= '<i class="fa fa-rocket"></i> <span id="tmms-btn-text">' . get_string('start_test', 'block_tmms_24') . '</span>';
         $output .= '</a>';
         $output .= '</div>';
@@ -369,9 +369,9 @@ class block_tmms_24 extends block_base {
         $output .= '<style>
         .tmms-invitation-block {
             padding: 15px;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            background: linear-gradient(135deg, #fce4ec 0%, #f8f9fa 100%);
             border-radius: 8px;
-            border: 1px solid #dee2e6;
+            border: 1px solid #f8bbd0;
         }
         .tmms-header i {
             text-shadow: 0 1px 2px rgba(0,0,0,0.1);
@@ -383,6 +383,16 @@ class block_tmms_24 extends block_base {
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             font-weight: 500;
             transition: all 0.3s ease;
+        }
+        .tmms-actions .btn-primary,
+        #tmms-start-btn {
+            background-color: #e91e63;
+            border-color: #e91e63;
+        }
+        .tmms-actions .btn-primary:hover,
+        #tmms-start-btn:hover {
+            background-color: #d81b60;
+            border-color: #c2185b;
         }
         .tmms-actions .btn:hover {
             transform: translateY(-1px);
