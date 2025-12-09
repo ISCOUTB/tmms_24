@@ -37,8 +37,8 @@ echo '<h4 class="mb-0">' . get_string('results_for', 'block_tmms_24') . ' ' . fu
 echo '</div>';
 echo '<div class="card-body">';
 
-// Get student's test result
-$result = $DB->get_record('tmms_24', ['course' => $courseid, 'user' => $userid]);
+// Get student's test result (in any course)
+$result = $DB->get_record('tmms_24', ['user' => $userid]);
 
 if (!$result) {
     echo '<div class="alert alert-info">';
