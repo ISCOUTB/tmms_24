@@ -58,8 +58,8 @@ if (!empty($missing_items)) {
 // Calcular puntajes
 $scores = TMMS24Facade::calculate_scores(array_values($responses));
 
-// Verificar si ya existe un registro para este usuario en este curso
-$existing_entry = $DB->get_record('tmms_24', array('user' => $USER->id, 'course' => $courseid));
+// Verificar si ya existe un registro para este usuario (en cualquier curso)
+$existing_entry = $DB->get_record('tmms_24', array('user' => $USER->id));
 
 // Si ya existe un registro, no permitir retakes
 if ($existing_entry) {
