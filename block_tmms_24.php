@@ -130,8 +130,7 @@ class block_tmms_24 extends block_base {
         } else {
             global $DB;
             $entry = $DB->get_record('tmms_24', [
-                'user' => $USER->id,
-                'course' => $COURSE->id
+                'user' => $USER->id
             ]);
             
             if ($entry && isset($entry->item1) && $entry->item1 > 0) {
@@ -426,8 +425,30 @@ class block_tmms_24 extends block_base {
         
         // Get course statistics
         $context = context_course::instance($COURSE->id);
-        $total_enrolled = count_enrolled_users($context, 'block/tmms_24:taketest');
-        $total_completed = $DB->count_records('tmms_24', ['course' => $COURSE->id]);
+        $enrolled_students = get_enrolled_users($context, '', 0, 'u.id', null, 0, 0, true);
+        
+        // Filtrar solo estudiantes (rol 5)
+        $student_ids = array();
+        foreach ($enrolled_students as $user) {
+            $roles = get_user_roles($context, $user->id);
+            foreach ($roles as $role) {
+                if ($role->roleid == 5) { // 5 = student
+                    $student_ids[] = $user->id;
+                    break;
+                }
+            }
+        }
+        
+        $total_enrolled = count($student_ids);
+        
+        // Obtener respuestas solo de estudiantes inscritos
+        $total_completed = 0;
+        if (!empty($student_ids)) {
+            list($insql, $params) = $DB->get_in_or_equal($student_ids, SQL_PARAMS_NAMED, 'user');
+            $sql = "SELECT COUNT(*) FROM {tmms_24} WHERE user $insql";
+            $total_completed = $DB->count_records_sql($sql, $params);
+        }
+        
         $completion_rate = $total_enrolled > 0 ? ($total_completed / $total_enrolled) * 100 : 0;
         
         // Quick stats with chaside style
@@ -470,13 +491,16 @@ class block_tmms_24 extends block_base {
         $output .= '</div>';
         
         // Recent completions
-        $recent_completions = $DB->get_records_sql("
-            SELECT u.firstname, u.lastname, tr.created_at 
-            FROM {tmms_24} tr 
-            JOIN {user} u ON tr.user = u.id 
-            WHERE tr.course = ? 
-            ORDER BY tr.created_at DESC 
-            LIMIT 3", [$COURSE->id]);
+        $recent_completions = array();
+        if (!empty($student_ids)) {
+            list($insql, $params) = $DB->get_in_or_equal($student_ids, SQL_PARAMS_NAMED, 'user');
+            $sql = "SELECT u.firstname, u.lastname, tr.created_at 
+                    FROM {tmms_24} tr 
+                    JOIN {user} u ON tr.user = u.id 
+                    WHERE tr.user $insql
+                    ORDER BY tr.created_at DESC";
+            $recent_completions = $DB->get_records_sql($sql, $params, 0, 3);
+        }
         
         if ($recent_completions) {
             $output .= '<div class="recent-completions mt-3">';
