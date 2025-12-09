@@ -45,7 +45,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="block_tmms_24_user_course_idx" UNIQUE="true" FIELDS="user, course"/>
+        <INDEX NAME="user_unique" UNIQUE="true" FIELDS="user"/>
       </INDEXES>
     </TABLE>
   </TABLES>
