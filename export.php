@@ -18,12 +18,31 @@ require_capability('block/tmms_24:viewallresults', $context);
 
 $userid = optional_param('userid', 0, PARAM_INT);
 
-// Fetch entries
-$params = ['course' => $courseid];
-if ($userid > 0) {
-    $params['user'] = $userid;
+// Get enrolled students in this course
+$enrolled_users = get_enrolled_users($context, '', 0, 'u.id', null, 0, 0, true);
+
+// Filtrar solo estudiantes (rol 5)
+$enrolled_ids = array();
+foreach ($enrolled_users as $user) {
+    $roles = get_user_roles($context, $user->id);
+    foreach ($roles as $role) {
+        if ($role->roleid == 5) { // 5 = student
+            $enrolled_ids[] = $user->id;
+            break;
+        }
+    }
 }
-$all_entries = $DB->get_records('tmms_24', $params, 'created_at DESC');
+
+// Fetch entries for enrolled students
+$all_entries = array();
+if ($userid > 0) {
+    // Export for specific user
+    $all_entries = $DB->get_records('tmms_24', ['user' => $userid], 'created_at DESC');
+} else if (!empty($enrolled_ids)) {
+    // Export for all enrolled students
+    list($insql, $params) = $DB->get_in_or_equal($enrolled_ids, SQL_PARAMS_NAMED);
+    $all_entries = $DB->get_records_select('tmms_24', "user $insql", $params, 'created_at DESC');
+}
 
 if (empty($all_entries)) {
     redirect(new moodle_url('/course/view.php', ['id' => $courseid]), get_string('no_results_yet', 'block_tmms_24'), null, 'error');
@@ -34,7 +53,7 @@ $facade = new TMMS24Facade();
 // Build CSV/JSON rows
 $export_rows = [];
 foreach ($all_entries as $entry) {
-    $user = $DB->get_record('user', ['id' => $entry->user]);
+    $user = $DB->get_record('user', ['id' => $entry->user], 'id, firstname, lastname, email, idnumber');
     if (!$user) {
         continue;
     }
@@ -50,8 +69,7 @@ foreach ($all_entries as $entry) {
 
     $row = [
         'timestamp' => date('c', $entry->created_at),
-        'user_id' => $entry->user,
-        'course_id' => $entry->course,
+        'student_id' => $user->idnumber,
         'name' => $user->firstname . ' ' . $user->lastname,
         'email' => $user->email,
         'age' => $entry->age,
@@ -76,10 +94,16 @@ foreach ($all_entries as $entry) {
     $export_rows[] = $row;
 }
 
-// Filename
-$filename = ($userid > 0)
-    ? 'tmms24_results_user_' . $userid . '_' . time() . '.' . $format
-    : 'tmms24_results_course_' . $courseid . '_' . time() . '.' . $format;
+// Generar nombre elegante del archivo usando string de idioma
+$course_name = preg_replace('/[^a-z0-9]/i', '_', strtolower($course->shortname));
+$date_str = date('Y-m-d');
+if ($userid > 0) {
+    $user = $DB->get_record('user', ['id' => $userid], 'firstname, lastname');
+    $user_name = preg_replace('/[^a-z0-9]/i', '_', strtolower(fullname($user)));
+    $filename = get_string('export_filename', 'block_tmms_24') . '_' . $user_name . '_' . $date_str . '.' . $format;
+} else {
+    $filename = get_string('export_filename', 'block_tmms_24') . '_' . $course_name . '_' . $date_str . '.' . $format;
+}
 
 if ($format === 'csv') {
     // Send headers

@@ -27,8 +27,8 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_title(get_string('test_title', 'block_tmms_24'));
 $PAGE->set_heading(get_string('test_title', 'block_tmms_24'));
 
-// Verificar si ya existe información del usuario
-$entry = $DB->get_record('tmms_24', array('user' => $USER->id, 'course' => $courseid));
+// Verificar si ya existe información del usuario (sin importar el curso)
+$entry = $DB->get_record('tmms_24', array('user' => $USER->id));
 
 echo $OUTPUT->header();
 echo "<link rel='stylesheet' href='" . $CFG->wwwroot . "/blocks/tmms_24/styles.css'>";

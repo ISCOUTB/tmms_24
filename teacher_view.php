@@ -26,11 +26,30 @@ echo $OUTPUT->box(
     'generalbox'
 );
 
-$results = $DB->get_records('tmms_24', ['course' => $courseid]);
+// Get enrolled students in this course (filter by student role)
+$enrolled_users = get_enrolled_users($context, '', 0, 'u.id', null, 0, 0, true);
+
+// Filtrar solo estudiantes (rol 5)
+$student_ids = array();
+foreach ($enrolled_users as $user) {
+    $roles = get_user_roles($context, $user->id);
+    foreach ($roles as $role) {
+        if ($role->roleid == 5) { // 5 = student
+            $student_ids[] = $user->id;
+            break;
+        }
+    }
+}
+
+// Get results only for enrolled students
+$results = array();
+if (!empty($student_ids)) {
+    list($insql, $params) = $DB->get_in_or_equal($student_ids, SQL_PARAMS_NAMED);
+    $results = $DB->get_records_select('tmms_24', "user $insql", $params);
+}
 
 // Calculate statistics
-$enrolled_students = get_enrolled_users($context, 'block/tmms_24:taketest');
-$total_enrolled = count($enrolled_students);
+$total_enrolled = count($student_ids);
 $total_completed = count($results);
 $completion_rate = $total_enrolled > 0 ? ($total_completed / $total_enrolled) * 100 : 0;
 

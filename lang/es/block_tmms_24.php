@@ -254,3 +254,6 @@ $string['draft_found'] = 'Borrador Encontrado';
 $string['draft_found_message'] = 'Encontramos respuestas guardadas de una sesión anterior. Tu progreso se ha restaurado automáticamente.';
 $string['confirm_exit'] = 'Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?';
 $string['continue_test'] = 'Continuar Test';
+
+// Nombres de archivos exportables
+$string['export_filename'] = 'TMMS24_Inteligencia_Emocional';

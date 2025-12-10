@@ -40,5 +40,25 @@ function xmldb_block_tmms_24_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2025092321, 'tmms_24');
     }
 
+    if ($oldversion < 2025120901) {
+        // Define index to be modified in tmms_24
+        $table = new xmldb_table('tmms_24');
+        
+        // Drop old unique index on user+course if exists
+        $old_index = new xmldb_index('block_tmms_24_user_course_idx', XMLDB_INDEX_UNIQUE, ['user', 'course']);
+        if ($dbman->index_exists($table, $old_index)) {
+            $dbman->drop_index($table, $old_index);
+        }
+        
+        // Add unique index on user only to prevent duplicate tests per user (regardless of course)
+        $index = new xmldb_index('user_unique', XMLDB_INDEX_UNIQUE, ['user']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // TMMS-24 savepoint reached.
+        upgrade_block_savepoint(true, 2025120901, 'tmms_24');
+    }
+
     return true;
 }

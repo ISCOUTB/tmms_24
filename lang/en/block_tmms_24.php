@@ -254,3 +254,6 @@ $string['draft_found'] = 'Draft Found';
 $string['draft_found_message'] = 'We found saved answers from a previous session. Your progress has been restored automatically.';
 $string['confirm_exit'] = 'You have unsaved changes. Are you sure you want to leave?';
 $string['continue_test'] = 'Continue Test';
+
+// Export filenames
+$string['export_filename'] = 'TMMS24_Emotional_Intelligence';
