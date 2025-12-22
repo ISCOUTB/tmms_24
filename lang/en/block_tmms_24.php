@@ -13,9 +13,7 @@ $string['take_test'] = 'Take Test';
 $string['test_completed'] = 'Test Completed';
 $string['view_full_results'] = 'View Full Results';
 $string['not_logged_in'] = 'You must be logged in to view this content.';
-$string['emotional_intelligence_test'] = 'Emotional Intelligence Test';
 $string['emotional_intelligence_results'] = 'Your Socio-Emotional Skills';
-$string['your_emotional_intelligence'] = 'Your Emotional Intelligence';
 $string['your_star_dimensions'] = 'Your Star Dimensions';
 $string['your_dimensions'] = 'Your Dimensions';
 $string['discover_your_emotional_skills'] = 'Discover your emotional skills';
@@ -136,7 +134,7 @@ $string['view_detailed_results'] = 'View Detailed Results';
 
 // Enhanced block display
 $string['emotional_intelligence_test'] = 'Emotional Intelligence Test';
-$string['your_emotional_intelligence'] = 'Your Star Dimension';
+$string['your_star_dimension'] = 'Your Star Dimension';
 $string['your_top_dimension'] = 'Your Top Dimension';
 $string['other_dimensions'] = 'Other Dimensions';
 $string['test_description_short'] = 'The TMMS-24 is a scientific tool designed to assess your emotional intelligence across three critical dimensions: Comprehension, Perception, and Regulation. Beyond measuring emotions, this analysis allows you to understand how you perceive and regulate your moods, a fundamental skill for managing stress, enhancing personal well-being, and building much more effective and healthy social relationships.';
