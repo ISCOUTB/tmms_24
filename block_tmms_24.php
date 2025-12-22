@@ -197,6 +197,163 @@ class TMMS24Facade {
         return $items;
     }
 
+    public static function render_results_html($scores, $interpretations, $interpretations_long, $gender, $entry, $completion_info = null) {
+        $output = '';
+        
+        // Helper for goal text
+        $get_goal_text = function($dim, $gender) {
+            if ($dim === 'percepcion') {
+                $range = ($gender === 'M') ? '22-32' : '25-35';
+                $optimal = ($gender === 'M') ? '27' : '30';
+                $a = new stdClass();
+                $a->range = $range;
+                $a->optimal = $optimal;
+                return get_string('goal_perception', 'block_tmms_24', $a);
+            } else {
+                // Comprension / Regulacion
+                $min = ($gender === 'M') ? 36 : 35;
+                $a = new stdClass();
+                $a->range = $min . '-40';
+                return get_string('goal_linear', 'block_tmms_24', $a);
+            }
+        };
+
+        // Display results summary
+        $output .= '<div class="block_tmms_24_results_summary">';
+        $output .= '<div class="row mb-4">';
+        
+        // Perception
+        $output .= '<div class="col-md-4 mb-4">';
+        $output .= '<div class="card" style="border-color: #ff6600 !important;">';
+        $output .= '<div class="card-body text-center">';
+        $output .= '<h5>' . get_string('perception', 'block_tmms_24') . '</h5>';
+        $output .= '<h3 style="color: #ff6600;">' . $scores['percepcion'] . '/40</h3>';
+        $output .= '<p class="mb-0">' . $interpretations['percepcion'] . '</p>';
+        $output .= '<div class="small text-muted mt-2" style="font-size: 0.85em; color: #999 !important;"><i class="fa fa-bullseye"></i> ' . $get_goal_text('percepcion', $gender) . '</div>';
+        $output .= '</div></div></div>';
+
+        // Comprehension
+        $output .= '<div class="col-md-4 mb-4">';
+        $output .= '<div class="card" style="border-color: #ff8533 !important;">';
+        $output .= '<div class="card-body text-center">';
+        $output .= '<h5>' . get_string('comprehension', 'block_tmms_24') . '</h5>';
+        $output .= '<h3 style="color: #ff8533;">' . $scores['comprension'] . '/40</h3>';
+        $output .= '<p class="mb-0">' . $interpretations['comprension'] . '</p>';
+        $output .= '<div class="small text-muted mt-2" style="font-size: 0.85em; color: #999 !important;"><i class="fa fa-bullseye"></i> ' . $get_goal_text('comprension', $gender) . '</div>';
+        $output .= '</div></div></div>';
+
+        // Regulation
+        $output .= '<div class="col-md-4 mb-4">';
+        $output .= '<div class="card" style="border-color: #ffaa66 !important;">';
+        $output .= '<div class="card-body text-center">';
+        $output .= '<h5>' . get_string('regulation', 'block_tmms_24') . '</h5>';
+        $output .= '<h3 style="color: #ffaa66;">' . $scores['regulacion'] . '/40</h3>';
+        $output .= '<p class="mb-0">' . $interpretations['regulacion'] . '</p>';
+        $output .= '<div class="small text-muted mt-2" style="font-size: 0.85em; color: #999 !important;"><i class="fa fa-bullseye"></i> ' . $get_goal_text('regulacion', $gender) . '</div>';
+        $output .= '</div></div></div>';
+
+        $output .= '</div></div>'; // End row, End summary
+
+        // Test completion info
+        if ($completion_info) {
+            $output .= '<div class="row mb-4">';
+            $output .= '<div class="col-md-4">';
+            $output .= '<strong>' . get_string('date_completed', 'block_tmms_24') . ':</strong> ';
+            $output .= $completion_info['date'];
+            $output .= '</div>';
+            $output .= '<div class="col-md-4">';
+            $output .= '<strong>' . get_string('age', 'block_tmms_24') . ':</strong> ';
+            $output .= $completion_info['age'];
+            $output .= '</div>';
+            $output .= '<div class="col-md-4">';
+            $output .= '<strong>' . get_string('gender', 'block_tmms_24') . ':</strong> ';
+            $output .= $completion_info['gender_display'];
+            $output .= '</div>';
+            $output .= '</div>';
+        }
+
+        // Interpretation section (detailed)
+        $output .= '<div class="card mt-4 mb-4">';
+        $output .= '<div class="card-header">';
+        $output .= '<h5 class="mb-0">' . get_string('results_interpretation', 'block_tmms_24') . '</h5>';
+        $output .= '</div>';
+        $output .= '<div class="card-body">';
+        $output .= '<div class="row">';
+        $output .= '<div class="col-md-4 mb-3 mb-md-0"><strong>' . get_string('perception', 'block_tmms_24') . ':</strong><br>' . s($interpretations['percepcion']) . '<div class="mt-2 text-muted">' . s($interpretations_long['percepcion']) . '</div></div>';
+        $output .= '<div class="col-md-4 mb-3 mb-md-0"><strong>' . get_string('comprehension', 'block_tmms_24') . ':</strong><br>' . s($interpretations['comprension']) . '<div class="mt-2 text-muted">' . s($interpretations_long['comprension']) . '</div></div>';
+        $output .= '<div class="col-md-4 mb-3 mb-md-0"><strong>' . get_string('regulation', 'block_tmms_24') . ':</strong><br>' . s($interpretations['regulacion']) . '<div class="mt-2 text-muted">' . s($interpretations_long['regulacion']) . '</div></div>';
+        $output .= '</div></div></div>';
+
+        // Detailed responses
+        $output .= '<div class="card mt-4">';
+        $output .= '<div class="card-header">';
+        $output .= '<h5 class="mb-0">' . get_string('detailed_responses', 'block_tmms_24') . '</h5>';
+        $output .= '</div>';
+        $output .= '<div class="card-body">';
+        $output .= '<div class="mb-3">';
+        $output .= '<strong>' . get_string('response_scale_legend', 'block_tmms_24') . ':</strong> ';
+        $output .= get_string('scale_1', 'block_tmms_24') . ', ';
+        $output .= get_string('scale_2', 'block_tmms_24') . ', ';
+        $output .= get_string('scale_3', 'block_tmms_24') . ', ';
+        $output .= get_string('scale_4', 'block_tmms_24') . ', ';
+        $output .= get_string('scale_5', 'block_tmms_24');
+        $output .= '</div>';
+        
+        $dimensions = [
+            'perception' => range(1, 8),
+            'comprehension' => range(9, 16), 
+            'regulation' => range(17, 24)
+        ];
+
+        foreach ($dimensions as $dimension => $items) {
+            $output .= '<div class="card mb-3">';
+            $output .= '<div class="card-header">';
+            $output .= '<h6 class="mb-0">' . get_string($dimension, 'block_tmms_24') . '</h6>';
+            $output .= '</div>';
+            $output .= '<div class="card-body">';
+            $output .= '<div class="table-responsive">';
+            $output .= '<table class="table table-sm">';
+            
+            foreach ($items as $item_num) {
+                $item_key = 'item' . $item_num;
+                $response_value = isset($entry->$item_key) ? $entry->$item_key : 0;
+                
+                // Calculamos el porcentaje (suponiendo escala 1 a 5)
+                $percent = ($response_value / 5) * 100;
+                
+                $output .= '<tr>';
+                // Columna del número de pregunta
+                $output .= '<td style="width: 40px;" class="text-center text-muted">' . $item_num . '.</td>';
+                
+                // Columna del texto de la pregunta
+                $output .= '<td>' . get_string('item' . $item_num, 'block_tmms_24') . '</td>';
+                
+                // Columna visual (Barra + Número)
+                $output .= '<td style="width: 180px; vertical-align: middle;">';
+                $output .= '<div class="d-flex align-items-center">';
+                    
+                // 1. La barra de progreso
+                $output .= '<div class="progress flex-grow-1 mr-2" style="height: 8px; background-color: #ffebe0;">';
+                $output .= '<div class="progress-bar" role="progressbar" style="height: 8px; width: ' . $percent . '%; background-color: #ff6600;" aria-valuenow="' . $response_value . '" aria-valuemin="0" aria-valuemax="5"></div>';
+                $output .= '</div>';
+                
+                // 2. El número a la derecha
+                $output .= '<span class="text-muted font-weight-bold" style="font-size: 0.9em; white-space: nowrap;">';
+                $output .= $response_value . ' / 5';
+                $output .= '</span>';
+                $output .= '</div>';
+                $output .= '</td>';
+                $output .= '</tr>';
+            }
+            
+            $output .= '</table></div></div></div>';
+        }
+        
+        $output .= '</div></div>'; // End card-body, End card
+
+        return $output;
+    }
+
     /**
      * Calculates a normalized score (0-100) for fair comparison between dimensions.
      * 
@@ -495,14 +652,10 @@ class block_tmms_24 extends block_base {
             }
             
             // Title based on count
-            $title_key = (count($star_dimensions) > 1) ? 'your_star_dimensions' : 'your_emotional_intelligence';
-            // If user wants specific title for single star, we can use 'your_star_dimension' but 'your_emotional_intelligence' was original.
-            // User asked: "Que el titulo diga Tus Dimensiones Estrella" for ties.
-            // Let's use "Your Star Dimension(s)" logic.
             if (count($star_dimensions) > 1) {
                 $output .= '<h6 class="mb-2">' . get_string('your_star_dimensions', 'block_tmms_24') . '</h6>';
             } else {
-                $output .= '<h6 class="mb-2">' . get_string('your_emotional_intelligence', 'block_tmms_24') . '</h6>';
+                $output .= '<h6 class="mb-2">' . get_string('your_star_dimension', 'block_tmms_24') . '</h6>';
             }
             
             // Render Star Dimensions
