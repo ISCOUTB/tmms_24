@@ -7,47 +7,55 @@ require_once($CFG->dirroot . '/blocks/moodleblock.class.php');
 // Fachada para la lógica de negocio del test TMMS-24
 class TMMS24Facade {
     
-    // Obtiene la interpretación de una puntuación según el baremo actualizado
-    public static function get_interpretation($dimension, $score, $gender) {
+    // Helper to resolve the base string key for interpretation
+    private static function resolve_interpretation_key($dimension, $score, $gender) {
         switch ($dimension) {
             case 'percepcion':
                 if ($gender === 'M') {
-                    if ($score <= 21) return get_string('perception_difficulty_feeling', 'block_tmms_24');
-                    if ($score >= 22 && $score <= 32) return get_string('perception_adequate_feeling', 'block_tmms_24');
-                    if ($score >= 33) return get_string('perception_excessive_attention', 'block_tmms_24');
+                    if ($score <= 21) return 'perception_difficulty_feeling';
+                    if ($score >= 22 && $score <= 32) return 'perception_adequate_feeling';
+                    if ($score >= 33) return 'perception_excessive_attention';
                 } else { // 'F' o cualquier otro valor (incluye 'prefiero_no_decir')
-                    if ($score <= 24) return get_string('perception_difficulty_feeling', 'block_tmms_24');
-                    if ($score >= 25 && $score <= 35) return get_string('perception_adequate_feeling', 'block_tmms_24');
-                    if ($score >= 36) return get_string('perception_excessive_attention', 'block_tmms_24');
+                    if ($score <= 24) return 'perception_difficulty_feeling';
+                    if ($score >= 25 && $score <= 35) return 'perception_adequate_feeling';
+                    if ($score >= 36) return 'perception_excessive_attention';
                 }
                 break;
                 
             case 'comprension':
                 if ($gender === 'M') {
-                    if ($score <= 25) return get_string('comprehension_difficulty_understanding', 'block_tmms_24');
-                    if ($score >= 26 && $score <= 35) return get_string('comprehension_adequate_with_difficulties', 'block_tmms_24');
-                    if ($score >= 36) return get_string('comprehension_great_clarity', 'block_tmms_24');
+                    if ($score <= 25) return 'comprehension_difficulty_understanding';
+                    if ($score >= 26 && $score <= 35) return 'comprehension_adequate_with_difficulties';
+                    if ($score >= 36) return 'comprehension_great_clarity';
                 } else { // 'F' o cualquier otro valor (incluye 'prefiero_no_decir')
-                    if ($score <= 23) return get_string('comprehension_difficulty_understanding', 'block_tmms_24');
-                    if ($score >= 24 && $score <= 34) return get_string('comprehension_adequate_with_difficulties', 'block_tmms_24');
-                    if ($score >= 35) return get_string('comprehension_great_clarity', 'block_tmms_24');
+                    if ($score <= 23) return 'comprehension_difficulty_understanding';
+                    if ($score >= 24 && $score <= 34) return 'comprehension_adequate_with_difficulties';
+                    if ($score >= 35) return 'comprehension_great_clarity';
                 }
                 break;
                 
             case 'regulacion':
                 if ($gender === 'M') {
-                    if ($score <= 23) return get_string('regulation_difficulty_managing', 'block_tmms_24');
-                    if ($score >= 24 && $score <= 35) return get_string('regulation_adequate_balance', 'block_tmms_24');
-                    if ($score >= 36) return get_string('regulation_great_capacity', 'block_tmms_24');
+                    if ($score <= 23) return 'regulation_difficulty_managing';
+                    if ($score >= 24 && $score <= 35) return 'regulation_adequate_balance';
+                    if ($score >= 36) return 'regulation_great_capacity';
                 } else { // 'F' o cualquier otro valor (incluye 'prefiero_no_decir')
-                    if ($score <= 23) return get_string('regulation_difficulty_managing', 'block_tmms_24');
-                    if ($score >= 24 && $score <= 34) return get_string('regulation_adequate_balance', 'block_tmms_24');
-                    if ($score >= 35) return get_string('regulation_great_capacity', 'block_tmms_24');
+                    if ($score <= 23) return 'regulation_difficulty_managing';
+                    if ($score >= 24 && $score <= 34) return 'regulation_adequate_balance';
+                    if ($score >= 35) return 'regulation_great_capacity';
                 }
                 break;
         }
-        
-        return get_string('not_determined', 'block_tmms_24');
+        return null;
+    }
+
+    // Obtiene la interpretación de una puntuación según el baremo actualizado
+    public static function get_interpretation($dimension, $score, $gender, $long = false) {
+        $key = self::resolve_interpretation_key($dimension, $score, $gender);
+        if (!$key) {
+            return get_string('not_determined', 'block_tmms_24');
+        }
+        return get_string($long ? $key . '_long' : $key, 'block_tmms_24');
     }
     
     public static function calculate_scores($responses) {
@@ -116,55 +124,29 @@ class TMMS24Facade {
         ];
     }
 
-    // Detailed (long) interpretations: same thresholds, expanded guidance text.
-    public static function get_interpretation_long($dimension, $score, $gender) {
-        switch ($dimension) {
-            case 'percepcion':
-                if ($gender === 'M') {
-                    if ($score <= 21) return get_string('perception_difficulty_feeling_long', 'block_tmms_24');
-                    if ($score >= 22 && $score <= 32) return get_string('perception_adequate_feeling_long', 'block_tmms_24');
-                    if ($score >= 33) return get_string('perception_excessive_attention_long', 'block_tmms_24');
-                } else { // 'F' o cualquier otro valor (incluye 'prefiero_no_decir')
-                    if ($score <= 24) return get_string('perception_difficulty_feeling_long', 'block_tmms_24');
-                    if ($score >= 25 && $score <= 35) return get_string('perception_adequate_feeling_long', 'block_tmms_24');
-                    if ($score >= 36) return get_string('perception_excessive_attention_long', 'block_tmms_24');
-                }
-                break;
-
-            case 'comprension':
-                if ($gender === 'M') {
-                    if ($score <= 25) return get_string('comprehension_difficulty_understanding_long', 'block_tmms_24');
-                    if ($score >= 26 && $score <= 35) return get_string('comprehension_adequate_with_difficulties_long', 'block_tmms_24');
-                    if ($score >= 36) return get_string('comprehension_great_clarity_long', 'block_tmms_24');
-                } else { // 'F' o cualquier otro valor (incluye 'prefiero_no_decir')
-                    if ($score <= 23) return get_string('comprehension_difficulty_understanding_long', 'block_tmms_24');
-                    if ($score >= 24 && $score <= 34) return get_string('comprehension_adequate_with_difficulties_long', 'block_tmms_24');
-                    if ($score >= 35) return get_string('comprehension_great_clarity_long', 'block_tmms_24');
-                }
-                break;
-
-            case 'regulacion':
-                if ($gender === 'M') {
-                    if ($score <= 23) return get_string('regulation_difficulty_managing_long', 'block_tmms_24');
-                    if ($score >= 24 && $score <= 35) return get_string('regulation_adequate_balance_long', 'block_tmms_24');
-                    if ($score >= 36) return get_string('regulation_great_capacity_long', 'block_tmms_24');
-                } else { // 'F' o cualquier otro valor (incluye 'prefiero_no_decir')
-                    if ($score <= 23) return get_string('regulation_difficulty_managing_long', 'block_tmms_24');
-                    if ($score >= 24 && $score <= 34) return get_string('regulation_adequate_balance_long', 'block_tmms_24');
-                    if ($score >= 35) return get_string('regulation_great_capacity_long', 'block_tmms_24');
-                }
-                break;
-        }
-
-        return get_string('not_determined', 'block_tmms_24');
-    }
-
     public static function get_all_interpretations_long($scores, $gender) {
         return [
-            'percepcion' => self::get_interpretation_long('percepcion', $scores['percepcion'], $gender),
-            'comprension' => self::get_interpretation_long('comprension', $scores['comprension'], $gender),
-            'regulacion' => self::get_interpretation_long('regulacion', $scores['regulacion'], $gender)
+            'percepcion' => self::get_interpretation('percepcion', $scores['percepcion'], $gender, true),
+            'comprension' => self::get_interpretation('comprension', $scores['comprension'], $gender, true),
+            'regulacion' => self::get_interpretation('regulacion', $scores['regulacion'], $gender, true)
         ];
+    }
+
+    public static function get_goal_text($dim, $gender) {
+        if ($dim === 'percepcion') {
+            $range = ($gender === 'M') ? '22-32' : '25-35';
+            $optimal = ($gender === 'M') ? '27' : '30';
+            $a = new stdClass();
+            $a->range = $range;
+            $a->optimal = $optimal;
+            return get_string('goal_perception', 'block_tmms_24', $a);
+        } else {
+            // Comprension / Regulacion
+            $min = ($gender === 'M') ? 36 : 35;
+            $a = new stdClass();
+            $a->range = $min . '-40';
+            return get_string('goal_linear', 'block_tmms_24', $a);
+        }
     }
     
     public static function get_gender_label($gender) {
@@ -200,24 +182,6 @@ class TMMS24Facade {
     public static function render_results_html($scores, $interpretations, $interpretations_long, $gender, $entry, $completion_info = null) {
         $output = '';
         
-        // Helper for goal text
-        $get_goal_text = function($dim, $gender) {
-            if ($dim === 'percepcion') {
-                $range = ($gender === 'M') ? '22-32' : '25-35';
-                $optimal = ($gender === 'M') ? '27' : '30';
-                $a = new stdClass();
-                $a->range = $range;
-                $a->optimal = $optimal;
-                return get_string('goal_perception', 'block_tmms_24', $a);
-            } else {
-                // Comprension / Regulacion
-                $min = ($gender === 'M') ? 36 : 35;
-                $a = new stdClass();
-                $a->range = $min . '-40';
-                return get_string('goal_linear', 'block_tmms_24', $a);
-            }
-        };
-
         // Display results summary
         $output .= '<div class="block_tmms_24_results_summary">';
         $output .= '<div class="row mb-4">';
@@ -229,7 +193,7 @@ class TMMS24Facade {
         $output .= '<h5>' . get_string('perception', 'block_tmms_24') . '</h5>';
         $output .= '<h3 style="color: #ff6600;">' . $scores['percepcion'] . '/40</h3>';
         $output .= '<p class="mb-0">' . $interpretations['percepcion'] . '</p>';
-        $output .= '<div class="small text-muted mt-2" style="font-size: 0.85em; color: #999 !important;"><i class="fa fa-bullseye"></i> ' . $get_goal_text('percepcion', $gender) . '</div>';
+        $output .= '<div class="small text-muted mt-2" style="font-size: 0.85em; color: #999 !important;"><i class="fa fa-bullseye"></i> ' . self::get_goal_text('percepcion', $gender) . '</div>';
         $output .= '</div></div></div>';
 
         // Comprehension
@@ -239,7 +203,7 @@ class TMMS24Facade {
         $output .= '<h5>' . get_string('comprehension', 'block_tmms_24') . '</h5>';
         $output .= '<h3 style="color: #ff8533;">' . $scores['comprension'] . '/40</h3>';
         $output .= '<p class="mb-0">' . $interpretations['comprension'] . '</p>';
-        $output .= '<div class="small text-muted mt-2" style="font-size: 0.85em; color: #999 !important;"><i class="fa fa-bullseye"></i> ' . $get_goal_text('comprension', $gender) . '</div>';
+        $output .= '<div class="small text-muted mt-2" style="font-size: 0.85em; color: #999 !important;"><i class="fa fa-bullseye"></i> ' . self::get_goal_text('comprension', $gender) . '</div>';
         $output .= '</div></div></div>';
 
         // Regulation
@@ -249,7 +213,7 @@ class TMMS24Facade {
         $output .= '<h5>' . get_string('regulation', 'block_tmms_24') . '</h5>';
         $output .= '<h3 style="color: #ffaa66;">' . $scores['regulacion'] . '/40</h3>';
         $output .= '<p class="mb-0">' . $interpretations['regulacion'] . '</p>';
-        $output .= '<div class="small text-muted mt-2" style="font-size: 0.85em; color: #999 !important;"><i class="fa fa-bullseye"></i> ' . $get_goal_text('regulacion', $gender) . '</div>';
+        $output .= '<div class="small text-muted mt-2" style="font-size: 0.85em; color: #999 !important;"><i class="fa fa-bullseye"></i> ' . self::get_goal_text('regulacion', $gender) . '</div>';
         $output .= '</div></div></div>';
 
         $output .= '</div></div>'; // End row, End summary
@@ -596,35 +560,13 @@ class block_tmms_24 extends block_base {
             }
         }
         
-        // Helper closure to get goal text
-        $get_goal_text = function($dim, $gender) {
-            if ($dim === 'percepcion') {
-                $range = ($gender === 'M') ? '22-32' : '25-35';
-                $optimal = ($gender === 'M') ? '27' : '30';
-                $a = new stdClass();
-                $a->range = $range;
-                $a->optimal = $optimal;
-                return get_string('goal_perception', 'block_tmms_24', $a);
-            } else {
-                // Comprension / Regulacion
-                if ($dim === 'comprension') {
-                     $min = ($gender === 'M') ? 36 : 35;
-                } else {
-                     $min = ($gender === 'M') ? 36 : 35;
-                }
-                $a = new stdClass();
-                $a->range = $min . '-40';
-                return get_string('goal_linear', 'block_tmms_24', $a);
-            }
-        };
-
         if ($all_bad) {
             // Case: All dimensions need improvement
             $output .= '<h6 class="mb-2">' . get_string('your_dimensions', 'block_tmms_24') . '</h6>';
             
             foreach ($scores as $dimension => $score) {
                 $interpretation = isset($interpretations[$dimension]) ? $interpretations[$dimension] : get_string('not_determined', 'block_tmms_24');
-                $goal_text = $get_goal_text($dimension, $gender);
+                $goal_text = TMMS24Facade::get_goal_text($dimension, $gender);
                 
                 $output .= '<div class="card border-secondary mb-2" style="border-color: #ffaa66 !important;">';
                 $output .= '<div class="card-body p-2">';
@@ -662,7 +604,7 @@ class block_tmms_24 extends block_base {
             foreach ($star_dimensions as $dim) {
                 $score = $scores[$dim];
                 $interpretation = isset($interpretations[$dim]) ? $interpretations[$dim] : get_string('not_determined', 'block_tmms_24');
-                $goal_text = $get_goal_text($dim, $gender);
+                $goal_text = TMMS24Facade::get_goal_text($dim, $gender);
                 
                 $output .= '<div class="card border-primary mb-3" style="border-left: 4px solid #ff6600 !important; border-color: #ff6600 !important;">';
                 $output .= '<div class="card-body p-3">';
@@ -710,7 +652,7 @@ class block_tmms_24 extends block_base {
                 foreach ($other_dimensions as $dim) {
                     $score = $scores[$dim];
                     $interpretation = isset($interpretations[$dim]) ? $interpretations[$dim] : get_string('not_determined', 'block_tmms_24');
-                    $goal_text = $get_goal_text($dim, $gender);
+                    $goal_text = TMMS24Facade::get_goal_text($dim, $gender);
                     
                     $output .= '<div class="card border-secondary mb-2" style="border-color: #ffaa66 !important;">';
                     $output .= '<div class="card-body p-2">';
