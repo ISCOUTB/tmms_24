@@ -13,9 +13,7 @@ $string['take_test'] = 'Realizar Test';
 $string['test_completed'] = 'Test Completado';
 $string['view_full_results'] = 'Ver Resultados Completos';
 $string['not_logged_in'] = 'Debes estar conectado para ver este contenido.';
-$string['emotional_intelligence_test'] = 'Test de Inteligencia Emocional';
 $string['emotional_intelligence_results'] = 'Tus Habilidades Socioemocionales';
-$string['your_emotional_intelligence'] = 'Tu Inteligencia Emocional';
 $string['your_star_dimensions'] = 'Tus Dimensiones Estrella';
 $string['your_dimensions'] = 'Tus Dimensiones';
 $string['discover_your_emotional_skills'] = 'Descubre tus habilidades emocionales';
@@ -136,7 +134,7 @@ $string['view_detailed_results'] = 'Ver Resultados Detallados';
 
 // Visualización mejorada del bloque
 $string['emotional_intelligence_test'] = 'Test de Inteligencia Emocional';
-$string['your_emotional_intelligence'] = 'Tu Dimensión Estrella';
+$string['your_star_dimension'] = 'Tu Dimensión Estrella';
 $string['your_top_dimension'] = 'Tu Dimensión Más Alta';
 $string['other_dimensions'] = 'Otras Dimensiones';
 $string['test_description_short'] = 'Esta herramienta evalúa tu inteligencia emocional a través de tres dimensiones clave: Comprensión, Percepción y Regulación. Su propósito es ayudarte a comprender y regular tus estados de ánimo, habilidades esenciales para gestionar el estrés y construir relaciones interpersonales más sanas y efectivas.';
