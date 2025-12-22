@@ -9,14 +9,25 @@ $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 $context = context_course::instance($courseid);
 
 require_login($course);
-require_capability('block/tmms_24:viewallresults', $context);
-require_capability('moodle/course:manageactivities', $context);
+if (!has_capability('block/tmms_24:viewallresults', $context) || !has_capability('moodle/course:manageactivities', $context)) {
+    redirect(new moodle_url('/course/view.php', ['id' => $courseid]));
+}
 
 if (!confirm_sesskey($sesskey)) {
     print_error('invalidsesskey');
 }
 
 $response = $DB->get_record('tmms_24', array('id' => $id), '*', MUST_EXIST);
+
+// Safety: this table is global (one row per user). Ensure the user belongs to this course context.
+if (!is_enrolled($context, $response->user, 'block/tmms_24:taketest', true)) {
+    redirect(
+        new moodle_url('/blocks/tmms_24/teacher_view.php', array('courseid' => $courseid)),
+        get_string('invalidaccess'),
+        null,
+        \core\output\notification::NOTIFY_ERROR
+    );
+}
 
 if ($DB->delete_records('tmms_24', array('id' => $id))) {
     // Get user info for notification

@@ -5,6 +5,26 @@ All notable changes to the TMMS-24 Moodle Block will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] — 2025-12-22
+
+### Added
+- **Multilingual Support:** Implementation of internationalization for Spanish and English.
+- **Automatic Saving:** System for persisting answers and real-time progress.
+
+### Changed
+- **UI/UX Redesign:** Complete and modern redesign of the block interface, tests, teacher view, and individual views.
+- **Responsive Design:** Optimization of all interfaces for mobile devices and tablets.
+- **User Flow:** Improved navigation experience for teacher and student profiles.
+- **Visual Identity:** Integration of institutional logos and application of the official color palette.
+- **Standardization:** Visual and functional consistency with the `chaside`, `learning_style` and `personality_test` blocks.
+- **Performance:** Optimization of resource loading and script execution.
+
+### Fixed
+- Minor bugs found in previous versions have been fixed.
+
+### Security
+- Security improvements have been implemented for data handling and access.
+
 ## [2.2.0] - 2025-09-30
 
 ### Added

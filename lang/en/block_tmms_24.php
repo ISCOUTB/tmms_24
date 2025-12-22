@@ -1,5 +1,5 @@
 <?php
-$string['pluginname'] = 'TMMS-24 Test';
+$string['pluginname'] = 'Socio-Emotional Skills Exploration';
 $string['tmms_24'] = 'TMMS-24';
 $string['tmms_24:addinstance'] = 'Add a new TMMS-24 block';
 $string['tmms_24:myaddinstance'] = 'Add a new TMMS-24 block to the My Moodle page';
@@ -13,8 +13,9 @@ $string['take_test'] = 'Take Test';
 $string['test_completed'] = 'Test Completed';
 $string['view_full_results'] = 'View Full Results';
 $string['not_logged_in'] = 'You must be logged in to view this content.';
-$string['emotional_intelligence_test'] = 'Emotional Intelligence Test';
-$string['emotional_intelligence_results'] = 'Emotional Intelligence Results';
+$string['emotional_intelligence_results'] = 'Your Socio-Emotional Skills';
+$string['your_star_dimensions'] = 'Your Star Dimensions';
+$string['your_dimensions'] = 'Your Dimensions';
 $string['discover_your_emotional_skills'] = 'Discover your emotional skills';
 $string['what_is_tmms24'] = 'What is TMMS-24?';
 $string['feature_24_questions'] = '24 brief questions';
@@ -23,8 +24,9 @@ $string['feature_instant_results'] = 'Instant results';
 $string['start_test'] = 'Start Test';
 
 // Form labels and instructions
+$string['test_page_title'] = 'Explore Your Socio-Emotional Skills';
 $string['instructions_title'] = 'Test Instructions';
-$string['instructions_text'] = 'Below you will find statements about emotions and feelings. Indicate your level of agreement by marking 1 to 5.';
+$string['instructions_text'] = 'Below you will find statements about emotions and feelings. Indicate your level of agreement by selecting the option that best reflects your opinion for each item.';
 $string['instructions_text2'] = 'There are no right or wrong answers; respond sincerely and without spending too much time on each item.';
 $string['scale_legend'] = 'Scale Legend:';
 $string['scale_1'] = '1 = Strongly disagree';
@@ -38,15 +40,38 @@ $string['demographics'] = 'Demographics';
 $string['age'] = 'Age';
 $string['gender'] = 'Gender';
 $string['gender_male'] = 'Male';
-$string['gender_female'] = 'Female';
+$string['gender_female'] = 'Female and others';
 $string['gender_prefer_not_say'] = 'Prefer not to say';
+$string['gender_other_genres'] = 'Other genders';
+$string['filter_by_gender'] = 'Filter statistics by gender';
+$string['all'] = 'All';
+$string['gender_filter_warning'] = 'Note: Due to differences in reference ranges by gender, combined averages don\'t accurately reflect the performance of all students.';
+$string['select_gender_for_avg'] = 'Select gender to view average';
 $string['male'] = 'Male';
 $string['female'] = 'Female';
+$string['reference_ranges'] = 'Reference Ranges';
+$string['range_low'] = 'Low / Needs improvement';
+$string['range_adequate'] = 'Adequate';
+$string['range_high'] = 'High / Excellent / Excessive';
+$string['range_low_perception'] = 'Low / Little attention';
+$string['range_high_perception'] = 'High / Too much attention';
+$string['range_low_linear'] = 'Low / Difficulty';
+$string['range_high_linear'] = 'High / Excellent';
+$string['click_to_view_ranges'] = 'Click to view ranges';
 $string['other'] = 'Other';
 
 // Test items
-$string['questionnaire'] = 'Questionnaire';
+$string['questionnaire'] = 'Questionary';
 $string['item'] = 'Item';
+
+// Star Dimension Explanation
+$string['star_dimension_reason_perception_close'] = '<b>Why this dimension?</b> Perception is special: balance is key. Your score is close to the optimal.';
+$string['star_dimension_reason_perception_exact'] = '<b>Why this dimension?</b> Perception is special: balance is key. Your score is at the optimal.';
+$string['star_dimension_reason_other'] = '<b>Why this dimension?</b> This is your strongest area, where higher scores indicate better emotional management.';
+
+// Dimension Goals
+$string['goal_perception'] = 'Ideal range: {$a->range} (Optimal: {$a->optimal})';
+$string['goal_linear'] = 'Higher is better (Ideal: {$a->range})';
 
 // Dimensions
 $string['perception'] = 'Perception'; 
@@ -60,12 +85,8 @@ $string['interpretation'] = 'Interpretation';
 $string['dimension'] = 'Dimension';
 
 // Interpretations
-$string['must_improve_low_attention'] = 'Needs improvement (pays too little attention)';
-$string['must_improve_high_attention'] = 'Needs improvement (pays too much attention)';
 $string['adequate'] = 'Adequate';
 $string['excellent'] = 'Excellent';
-$string['needs_improvement'] = 'Needs improvement';
-$string['must_improve'] = 'Must improve';
 $string['not_determined'] = 'Not determined';
 
 // TMMS-24 Items (English) - CORRECTED VERSION
@@ -105,7 +126,7 @@ $string['avg_regulation'] = 'Average Regulation';
 $string['download_all_csv'] = 'Download All Results (CSV)';
 $string['user'] = 'User';
 $string['date_completed'] = 'Date Completed';
-$string['no_results_yet'] = 'No results submitted yet.';
+$string['date_last_action'] = 'Last Action Date';
 
 // Student results strings  
 $string['your_results'] = 'Your Results';
@@ -113,10 +134,10 @@ $string['view_detailed_results'] = 'View Detailed Results';
 
 // Enhanced block display
 $string['emotional_intelligence_test'] = 'Emotional Intelligence Test';
-$string['your_emotional_intelligence'] = 'Your Emotional Intelligence';
+$string['your_star_dimension'] = 'Your Star Dimension';
 $string['your_top_dimension'] = 'Your Top Dimension';
 $string['other_dimensions'] = 'Other Dimensions';
-$string['test_description_short'] = 'Assess your ability to perceive, understand and regulate emotions.';
+$string['test_description_short'] = 'The TMMS-24 is a scientific tool designed to assess your emotional intelligence across three critical dimensions: Comprehension, Perception, and Regulation. Beyond measuring emotions, this analysis allows you to understand how you perceive and regulate your moods, a fundamental skill for managing stress, enhancing personal well-being, and building much more effective and healthy social relationships.';
 $string['duration_5_minutes'] = '~5 minutes duration';
 $string['24_questions'] = '24 questions';
 $string['3_dimensions'] = '3 dimensions assessed';
@@ -126,20 +147,29 @@ $string['what_you_will_discover'] = 'What you will discover:';
 $string['perception_ability'] = 'Your emotional perception ability';
 $string['comprehension_ability'] = 'Your emotional comprehension';
 $string['regulation_ability'] = 'Your emotional regulation';
-$string['start_test'] = 'Start Test';
 $string['points'] = 'points';
 $string['date_not_available'] = 'Date not available';
 
 // Management interface
-$string['management_title'] = 'TMMS-24 Management';
-$string['course_overview'] = 'Course overview';
 $string['completion_rate'] = 'Completion Rate';
 $string['completed'] = 'Completed';
+$string['in_progress'] = 'In Progress';
+$string['not_started'] = 'Not Started';
+$string['status'] = 'Status';
+$string['completed_singular'] = 'Completed';
 $string['pending'] = 'Pending';
 $string['of'] = 'of';
-$string['students_completed'] = 'students completed';
-$string['recent_completions'] = 'Recent Completions';
-$string['view_all_results'] = 'View All Results';
+$string['students_completed'] = 'students completed the test';
+$string['recent_completions'] = 'Recently Completed';
+$string['view_all_results'] = 'Go to Administration Panel';
+$string['test_not_completed_yet'] = 'Test not completed yet';
+$string['test_in_progress'] = 'Test in Progress';
+$string['test_in_progress_message'] = '{$a} has started the test but has not completed it yet.';
+$string['progress_label'] = 'Progress';
+$string['has_answered'] = 'Has answered';
+$string['questions'] = 'questions';
+$string['results_available_when_complete'] = 'Full results will be available when {$a} finishes the test.';
+$string['remind_submit_test'] = 'Remind the student to click the "Submit Test" button to view the results.';
 
 // Error messages
 $string['incomplete_data'] = 'The test data is incomplete. Please contact the administrator.';
@@ -154,29 +184,26 @@ $string['dimension_comprehension'] = 'Emotional Comprehension';
 $string['dimension_regulation'] = 'Emotional Regulation';
 
 // Administrative capabilities - Enhanced dashboard
-$string['admin_dashboard_description'] = 'TMMS-24 test administration panel. Here you can view detailed statistics, manage student responses and export data.';
-$string['enrolled_students'] = 'Enrolled students';
+$string['admin_dashboard_description'] = 'TMMS-24 Test administration panel. Here you can view detailed statistics, manage student responses and export data.';
+$string['enrolled_students'] = 'Total Students';
 $string['dimension_statistics'] = 'Statistics by dimension';
 $string['average_score'] = 'Average score';
 $string['student_responses'] = 'Student responses';
+$string['search_student'] = 'Search student...';
 $string['student'] = 'Student';
-$string['view_results'] = 'View results';
+$string['view_results'] = 'View';
 $string['actions'] = 'Actions';
 $string['delete_response'] = 'Delete response';
 $string['delete_response_confirm'] = 'Are you sure you want to delete {$a}\'s response? This action cannot be undone.';
-$string['response_deleted'] = 'Response deleted successfully.';
+$string['response_deleted_success'] = 'Response from {$a} deleted successfully.';
 $string['error_deleting_response'] = 'Error deleting response.';
-$string['download_csv'] = 'Download CSV';
-$string['download_json'] = 'Download JSON';
+$string['download_csv'] = 'Export CSV';
+$string['download_json'] = 'Export JSON';
 $string['detailed_responses'] = 'Detailed responses';
 $string['results_for'] = 'Results for';
-$string['back_to_teacher_view'] = 'Back to teacher view';
+$string['back_to_teacher_view'] = 'Back to Administration Panel';
 $string['student_not_completed'] = 'The student has not completed the test yet.';
-$string['tmms_24_dashboard'] = 'TMMS-24 Dashboard';
-
-// Perception interpretations
-$string['perception_needs_improvement_low'] = 'Must improve (pays little attention)';
-$string['perception_needs_improvement_high'] = 'Must improve (pays too much attention)';
+$string['tmms_24_dashboard'] = 'Socio-Emotional Skills Administration';
 
 // Form validation and submission
 $string['submit_test'] = 'Submit Test';
@@ -186,62 +213,52 @@ $string['validation_age_required'] = 'Age is required';
 $string['validation_gender_required'] = 'Gender is required';
 $string['validation_missing_items'] = 'Please answer all questions';
 $string['disclaimer'] = 'This test is for educational purposes only and does not constitute professional psychological assessment.';
-$string['legal_notice'] = 'TMMS-24 scale developed by Salovey, Mayer, Goldman, Turvey, and Palfai (1995).';
+$string['legal_notice'] = 'Based on the TMMS-24 scale by Salovey et al. For educational purposes only.';
 $string['results_for_male'] = 'Results for Male';
 $string['results_for_female'] = 'Results for Female';
 $string['please_answer_item'] = 'Please answer this item';
 $string['validation_required'] = 'Please complete all required fields';
-$string['test_saved_successfully'] = 'Test saved successfully!';
+$string['test_saved_successfully'] = 'Congratulations, you can now view your results.';
 $string['error_saving_test'] = 'Error saving test. Please try again.';
 
-// Export and dimension strings
-$string['dimension_perception'] = 'Emotional Perception';
-$string['dimension_comprehension'] = 'Emotional Comprehension';
-$string['dimension_regulation'] = 'Emotional Regulation';
-$string['invalid_export_format'] = 'Invalid export format';
-
-// View.php additional strings
-$string['disclaimer'] = 'This test provides a general assessment of emotional intelligence. Results should be interpreted in context.';
-$string['legal_notice'] = 'Based on the TMMS-24 scale by Salovey et al. For educational purposes only.';
-$string['test_completed'] = 'Test Completed Successfully';
-$string['view_full_results'] = 'View Full Results';
+// Access / redirects
+$string['teachers_cannot_take_test'] = 'Teachers are redirected to the admin panel.';
 
 // Student results additional strings  
-$string['back_to_teacher_view'] = 'Back to Teacher View';
-$string['results_for'] = 'Results for';
-$string['student_not_completed'] = 'This student has not completed the test yet.';
-$string['date_completed'] = 'Date Completed';
-$string['detailed_responses'] = 'Detailed Responses';
 $string['results_interpretation'] = 'Results Interpretation';
 
 // General strings
-$string['not_determined'] = 'Not determined';
 $string['download'] = 'Download';
 $string['test_already_completed'] = 'You have already completed this test. You can only take it once.';
 $string['student_results'] = 'Student Results';
 $string['item_not_found'] = 'Item {$a} not available';
-$string['response_deleted_success'] = 'Response from {$a} deleted successfully.';
+$string['response_scale_legend'] = 'Response Scale';
 
 // Additional strings for teacher_view.php
-$string['statistics'] = 'Statistics';
-$string['enrolled_students'] = 'Enrolled Students';
-$string['total_completed'] = 'Total Completed';
-$string['dimension_statistics'] = 'Statistics by Dimension';
-$string['average_score'] = 'Average Score';
-$string['must_improve'] = 'Must Improve';
-$string['error_deleting_response'] = 'Error deleting response';
 $string['no_results_yet'] = 'No results available yet';
+$string['no_participants_message'] = 'No students have started the test yet.';
 
-// New detailed TMMS-24 interpretations
-$string['perception_difficulty_feeling'] = 'Difficulty feeling/expressing emotions';
-$string['perception_adequate_feeling'] = 'Adequate capacity to feel/express';
-$string['perception_excessive_attention'] = 'Excessive attention that may generate worry';
-$string['comprehension_difficulty_understanding'] = 'Difficulty understanding/differentiating emotions';
-$string['comprehension_adequate_with_difficulties'] = 'Adequate capacity, with possible difficulties';
-$string['comprehension_great_clarity'] = 'Great emotional clarity';
-$string['regulation_difficulty_managing'] = 'Difficulty managing emotions and recovering';
-$string['regulation_adequate_balance'] = 'Adequate regulation, emotional balance';
-$string['regulation_great_capacity'] = 'Great capacity to manage negatives and enhance positives';
+// TMMS-24 interpretations (short) for the top cards
+$string['perception_difficulty_feeling'] = 'Difficulty identifying or expressing emotions';
+$string['perception_adequate_feeling'] = 'Adequate capacity to identify and express emotions';
+$string['perception_excessive_attention'] = 'Excessive attention to emotions, which may generate worry';
+$string['comprehension_difficulty_understanding'] = 'Difficulty identifying and differentiating emotions';
+$string['comprehension_adequate_with_difficulties'] = 'Adequate capacity to understand emotions, with some difficulties';
+$string['comprehension_great_clarity'] = 'Great clarity in identifying and understanding emotions';
+$string['regulation_difficulty_managing'] = 'Difficulty regulating emotions and recovering from negative situations';
+$string['regulation_adequate_balance'] = 'Adequate emotional regulation and balance';
+$string['regulation_great_capacity'] = 'Great capacity to manage negative emotions and enhance positive ones';
+
+// TMMS-24 interpretations (long) for the bottom section
+$string['perception_difficulty_feeling_long'] = 'It may be hard at times to notice or put into words what you feel. A good start is a 30-second pause: name the emotion (sadness, anger, anxiety) and describe one body signal (tightness, knot, warmth).';
+$string['perception_adequate_feeling_long'] = 'You usually notice what you feel without getting stuck in it. Keep this balance with simple habits: name the emotion, validate it, and choose one small helpful action.';
+$string['perception_excessive_attention_long'] = 'You notice feelings strongly, but too much focus can turn into worry or rumination. It can help to shift gears: breathe, label the emotion, then move to a short plan (what I can do now and what I will revisit later).';
+$string['comprehension_difficulty_understanding_long'] = 'It can be difficult to understand why you feel this way or to tell similar emotions apart. Try concrete prompts: what happened, what I thought, what I needed, and pick a more precise emotion word.';
+$string['comprehension_adequate_with_difficulties_long'] = 'You often understand your emotions, though stress can make it harder. A useful technique is one sentence: “I feel ___ because ___”, then check if it changes over time.';
+$string['comprehension_great_clarity_long'] = 'You tend to understand what you feel and why. Use this strength to anticipate difficult moments, communicate with precision, and make decisions aligned with your values.';
+$string['regulation_difficulty_managing_long'] = 'It may take longer to regain balance when discomfort shows up. Start with basics: slow breathing, pause before reacting, and one short self-care action (walk, hydrate, stretch).';
+$string['regulation_adequate_balance_long'] = 'You generally manage discomfort and sustain positive states. To strengthen it, combine strategies: problem-solve when you can, and practice acceptance when it is out of your control.';
+$string['regulation_great_capacity_long'] = 'You often recover well and amplify positive states. Just avoid forcing uncomfortable emotions down; balancing acceptance and action keeps wellbeing steady and genuine.';
 
 // Labels for statistics
 $string['difficulty_category'] = 'Difficulties';
@@ -257,3 +274,35 @@ $string['continue_test'] = 'Continue Test';
 
 // Export filenames
 $string['export_filename'] = 'TMMS24_Emotional_Intelligence';
+
+// Export CSV headers
+$string['export_student_id'] = 'Student ID';
+$string['export_name'] = 'Student Name';
+$string['export_email'] = 'Student Email';
+$string['export_age'] = 'Age';
+$string['export_gender'] = 'Gender';
+$string['export_perception_score'] = 'Perception Score';
+$string['export_comprehension_score'] = 'Comprehension Score';
+$string['export_regulation_score'] = 'Regulation Score';
+$string['export_perception_interpretation'] = 'Perception Interpretation';
+$string['export_comprehension_interpretation'] = 'Comprehension Interpretation';
+$string['export_regulation_interpretation'] = 'Regulation Interpretation';
+$string['export_last_action_date'] = 'Last Action Date';
+$string['export_item'] = 'Item {$a}';
+
+// New strings for auto-save and improved flow
+$string['all_answered_title'] = 'All questions answered!';
+$string['all_answered_message'] = 'You have answered all 24 questions. Don\'t forget to click "Finish Test" to submit your answers and see your emotional skills results!';
+$string['your_progress'] = 'Your Progress';
+$string['completed_status'] = 'completed';
+$string['finish_test'] = 'Finish Test';
+$string['saving'] = 'Saving...';
+$string['saved'] = 'Saved';
+$string['auto_save_enabled'] = 'Auto-save enabled';
+$string['please_answer_all'] = 'Please answer all questions before finishing';
+$string['question_unanswered'] = 'This question has not been answered';
+$string['scale_legend_short'] = 'Scale: 1=Strongly disagree | 2=Disagree | 3=Neutral | 4=Agree | 5=Strongly agree';
+
+// Management view strings
+$string['management_title'] = 'TMMS-24 Test Management';
+$string['course_overview'] = 'Course Overview';
