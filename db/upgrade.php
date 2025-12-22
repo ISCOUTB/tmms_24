@@ -92,19 +92,12 @@ function xmldb_block_tmms_24_upgrade($oldversion) {
         }
         
         // Modify score fields to allow NULL initially
-        $field = new xmldb_field('percepcion_score', XMLDB_TYPE_INTEGER, '2', null, null, null, null);
-        if ($dbman->field_exists($table, $field)) {
-            $dbman->change_field_notnull($table, $field);
-        }
-        
-        $field = new xmldb_field('comprension_score', XMLDB_TYPE_INTEGER, '2', null, null, null, null);
-        if ($dbman->field_exists($table, $field)) {
-            $dbman->change_field_notnull($table, $field);
-        }
-        
-        $field = new xmldb_field('regulacion_score', XMLDB_TYPE_INTEGER, '2', null, null, null, null);
-        if ($dbman->field_exists($table, $field)) {
-            $dbman->change_field_notnull($table, $field);
+        $score_fields = ['percepcion_score', 'comprension_score', 'regulacion_score'];
+        foreach ($score_fields as $field_name) {
+            $field = new xmldb_field($field_name, XMLDB_TYPE_INTEGER, '2', null, null, null, null);
+            if ($dbman->field_exists($table, $field)) {
+                $dbman->change_field_notnull($table, $field);
+            }
         }
 
         // TMMS-24 savepoint reached.
