@@ -1,4 +1,4 @@
-# Bloque Exploración de las Habilidades Socio-Emocionales (Moodle)
+# Bloque Exploración de las Habilidades Socioemocionales (Moodle)
 
 El bloque **TMMS-24** permite a estudiantes responder una prueba de **24 ítems** en escala **1–5** y obtener un perfil por **tres dimensiones** de inteligencia emocional:
 
