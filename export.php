@@ -146,6 +146,38 @@ $labelmap = [
     'last_actionlast_action_date_date' => 'export_last_action_date'
 ];
 
+$humanize = function($k) {
+    // turn item_1 -> Item 1, student_id -> Student Id
+    $k = str_replace('_', ' ', $k);
+    $k = preg_replace('/\s+/', ' ', $k);
+    $k = trim($k);
+    $k = mb_convert_case($k, MB_CASE_TITLE, "UTF-8");
+    return $k;
+};
+
+$get_label = function($k) use ($labelmap, $humanize) {
+    if (preg_match('/^item_(\d+)$/', $k, $m)) {
+        $i = (int)$m[1];
+        $label = get_string('export_item', 'block_tmms_24', $i);
+        if ($label === 'export_item') {
+            $label = $humanize($k);
+        }
+    } else if (isset($labelmap[$k])) {
+        $label = get_string($labelmap[$k], 'block_tmms_24');
+        if ($label === $labelmap[$k]) {
+            $label = $humanize($k);
+        }
+    } else {
+        // Default: try to use a generic export string key, else humanize
+        $trykey = 'export_' . $k;
+        $label = get_string($trykey, 'block_tmms_24');
+        if ($label === $trykey) {
+            $label = $humanize($k);
+        }
+    }
+    return $label;
+};
+
 if ($format === 'csv') {
     // Send headers
     header('Content-Type: text/csv; charset=utf-8');
@@ -160,37 +192,8 @@ if ($format === 'csv') {
     $keys = array_keys($export_rows[0]);
     $headers = array();
 
-    $humanize = function($k) {
-        // turn item_1 -> Item 1, student_id -> Student Id
-        $k = str_replace('_', ' ', $k);
-        $k = preg_replace('/\s+/', ' ', $k);
-        $k = trim($k);
-        $k = mb_convert_case($k, MB_CASE_TITLE, "UTF-8");
-        return $k;
-    };
-
     foreach ($keys as $k) {
-        // Items (responses)
-        if (preg_match('/^item_(\d+)$/', $k, $m)) {
-            $i = (int)$m[1];
-            $label = get_string('export_item', 'block_tmms_24', $i);
-            if ($label === 'export_item') {
-                $label = $humanize($k);
-            }
-        } else if (isset($labelmap[$k])) {
-            $label = get_string($labelmap[$k], 'block_tmms_24');
-            if ($label === $labelmap[$k]) {
-                $label = $humanize($k);
-            }
-        } else {
-            // Default: try to use a generic export string key, else humanize
-            $trykey = 'export_' . $k;
-            $label = get_string($trykey, 'block_tmms_24');
-            if ($label === $trykey) {
-                $label = $humanize($k);
-            }
-        }
-        $headers[] = $label;
+        $headers[] = $get_label($k);
     }
 
     fputcsv($output, $headers);
@@ -214,35 +217,9 @@ if ($format === 'csv') {
     // Localize JSON keys to the current language (fallback to humanized keys).
     $keys = array_keys($export_rows[0]);
 
-    $humanize = function($k) {
-        $k = str_replace('_', ' ', $k);
-        $k = preg_replace('/\s+/', ' ', $k);
-        $k = trim($k);
-        $k = mb_convert_case($k, MB_CASE_TITLE, "UTF-8");
-        return $k;
-    };
-
     $keylabels = [];
     foreach ($keys as $k) {
-        if (preg_match('/^item_(\d+)$/', $k, $m)) {
-            $i = (int)$m[1];
-            $label = get_string('export_item', 'block_tmms_24', $i);
-            if ($label === 'export_item') {
-                $label = $humanize($k);
-            }
-        } else if (isset($labelmap[$k])) {
-            $label = get_string($labelmap[$k], 'block_tmms_24');
-            if ($label === $labelmap[$k]) {
-                $label = $humanize($k);
-            }
-        } else {
-            $trykey = 'export_' . $k;
-            $label = get_string($trykey, 'block_tmms_24');
-            if ($label === $trykey) {
-                $label = $humanize($k);
-            }
-        }
-        $keylabels[$k] = $label;
+        $keylabels[$k] = $get_label($k);
     }
 
     $localized = [];
