@@ -65,9 +65,9 @@ $string['questionnaire'] = 'Questionary';
 $string['item'] = 'Item';
 
 // Star Dimension Explanation
-$string['star_dimension_reason_perception_close'] = '<b>Why this dimension?</b> Perception is special: balance is key. Your score is close to the optimal.';
-$string['star_dimension_reason_perception_exact'] = '<b>Why this dimension?</b> Perception is special: balance is key. Your score is at the optimal.';
-$string['star_dimension_reason_other'] = '<b>Why this dimension?</b> This is your strongest area, where higher scores indicate better emotional management.';
+$string['star_dimension_reason_perception_close'] = '<strong>Why this dimension?</strong> Perception is special: balance is key. Your score is close to the optimal.';
+$string['star_dimension_reason_perception_exact'] = '<strong>Why this dimension?</strong> Perception is special: balance is key. Your score is at the optimal.';
+$string['star_dimension_reason_other'] = '<strong>Why this dimension?</strong> This is your strongest area, where higher scores indicate better emotional management.';
 
 // Dimension Goals
 $string['goal_perception'] = 'Ideal range: {$a->range} (Optimal: {$a->optimal})';
@@ -189,7 +189,8 @@ $string['enrolled_students'] = 'Total Students';
 $string['dimension_statistics'] = 'Statistics by dimension';
 $string['average_score'] = 'Average score';
 $string['student_responses'] = 'Student responses';
-$string['search_student'] = 'Search student...';
+$string['search_student'] = 'Search student or email...';
+$string['no_results_search'] = 'No name or email contains "{$a}"';
 $string['student'] = 'Student';
 $string['view_results'] = 'View';
 $string['actions'] = 'Actions';
@@ -249,7 +250,7 @@ $string['regulation_difficulty_managing'] = 'Difficulty regulating emotions and 
 $string['regulation_adequate_balance'] = 'Adequate emotional regulation and balance';
 $string['regulation_great_capacity'] = 'Great capacity to manage negative emotions and enhance positive ones';
 
-// TMMS-24 interpretations (long) for the bottom section
+// TMMS-24 interpretations (long) for the bottom section - Students
 $string['perception_difficulty_feeling_long'] = 'It may be hard at times to notice or put into words what you feel. A good start is a 30-second pause: name the emotion (sadness, anger, anxiety) and describe one body signal (tightness, knot, warmth).';
 $string['perception_adequate_feeling_long'] = 'You usually notice what you feel without getting stuck in it. Keep this balance with simple habits: name the emotion, validate it, and choose one small helpful action.';
 $string['perception_excessive_attention_long'] = 'You notice feelings strongly, but too much focus can turn into worry or rumination. It can help to shift gears: breathe, label the emotion, then move to a short plan (what I can do now and what I will revisit later).';
@@ -259,6 +260,17 @@ $string['comprehension_great_clarity_long'] = 'You tend to understand what you f
 $string['regulation_difficulty_managing_long'] = 'It may take longer to regain balance when discomfort shows up. Start with basics: slow breathing, pause before reacting, and one short self-care action (walk, hydrate, stretch).';
 $string['regulation_adequate_balance_long'] = 'You generally manage discomfort and sustain positive states. To strengthen it, combine strategies: problem-solve when you can, and practice acceptance when it is out of your control.';
 $string['regulation_great_capacity_long'] = 'You often recover well and amplify positive states. Just avoid forcing uncomfortable emotions down; balancing acceptance and action keeps wellbeing steady and genuine.';
+
+// TMMS-24 interpretations (long) for the bottom section - Teachers and Administrators
+$string['perception_difficulty_feeling_long_teacher'] = 'The student has a limited ability to recognize and express their emotions. They may struggle to identify what they are feeling in certain situations, leading to misunderstandings in communication and difficulties in managing stress or frustration during academic tasks.';
+$string['perception_adequate_feeling_long_teacher'] = 'The student demonstrates a satisfactory ability to perceive and express their emotions. They can generally identify what they are feeling and communicate it appropriately, which helps them maintain healthy interpersonal relationships and manage emotional challenges in academic settings.';
+$string['perception_excessive_attention_long_teacher'] = 'The student tends to overanalyze their emotional states, which can lead to excessive worry or rumination. This heightened attention to emotions may distract them from focusing on academic tasks and could contribute to increased stress levels in challenging situations.';
+$string['comprehension_difficulty_understanding_long_teacher'] = 'The student shows significant challenges in understanding their emotional states. They may find it hard to identify the causes of their feelings, which can lead to confusion and difficulty in responding appropriately to emotional situations, potentially affecting their academic performance.';
+$string['comprehension_adequate_with_difficulties_long_teacher'] = 'The student understands their emotions under normal conditions, but their clarity decreases under pressure. During exam periods or critical deadlines, they may feel overwhelmed and lose the ability to rationally analyze what is happening to them.';
+$string['comprehension_great_clarity_long_teacher'] = 'The student has a deep understanding of their emotional world. They know exactly why they feel a certain way, which allows them to be very autonomous, make coherent decisions, and accurately explain their needs to the teacher.';
+$string['regulation_difficulty_managing_long_teacher'] = 'The student shows low emotional resilience. Once they fall into a negative state (due to a bad grade or a mistake), it takes them a lot of time and effort to regain balance, which can affect their long-term performance.';
+$string['regulation_adequate_balance_long_teacher'] = 'The student is capable of effectively regulating their emotions. Even when experiencing frustration or stress, they have the necessary tools to calm down and resume their work rhythm independently and within a reasonable time.';
+$string['regulation_great_capacity_long_teacher'] = 'The student stands out for their excellent self-management ability. They not only quickly repair their negative states but also know how to enhance their positive emotions to self-motivate and maintain a proactive attitude even in the face of the most difficult challenges.';
 
 // Labels for statistics
 $string['difficulty_category'] = 'Difficulties';
@@ -306,3 +318,6 @@ $string['scale_legend_short'] = 'Scale: 1=Strongly disagree | 2=Disagree | 3=Neu
 // Management view strings
 $string['management_title'] = 'TMMS-24 Test Management';
 $string['course_overview'] = 'Course Overview';
+$string['question'] = 'Question';
+$string['response'] = 'Response';
+$string['questionnaire'] = 'Questionnaire';
