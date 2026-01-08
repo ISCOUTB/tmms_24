@@ -1,4 +1,12 @@
 <?php
+/**
+ * TMMS-24 Block
+ *
+ * @package    block_tmms_24
+ * @copyright  2026 SAVIO - Sistema de Aprendizaje Virtual Interactivo (UTB)
+ * @author     SAVIO Development Team
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -9,9 +17,12 @@ class TMMS24Facade {
     
     // Helper to resolve the base string key for interpretation
     private static function resolve_interpretation_key($dimension, $score, $gender) {
+        // Standardize gender check: M or masculino are considered Male, everything else falls to Female/Default logic
+        $is_male = ($gender === 'M' || strtolower($gender) === 'masculino');
+
         switch ($dimension) {
             case 'percepcion':
-                if ($gender === 'M') {
+                if ($is_male) {
                     if ($score <= 21) return 'perception_difficulty_feeling';
                     if ($score >= 22 && $score <= 32) return 'perception_adequate_feeling';
                     if ($score >= 33) return 'perception_excessive_attention';
@@ -23,7 +34,7 @@ class TMMS24Facade {
                 break;
                 
             case 'comprension':
-                if ($gender === 'M') {
+                if ($is_male) {
                     if ($score <= 25) return 'comprehension_difficulty_understanding';
                     if ($score >= 26 && $score <= 35) return 'comprehension_adequate_with_difficulties';
                     if ($score >= 36) return 'comprehension_great_clarity';
@@ -35,7 +46,7 @@ class TMMS24Facade {
                 break;
                 
             case 'regulacion':
-                if ($gender === 'M') {
+                if ($is_male) {
                     if ($score <= 23) return 'regulation_difficulty_managing';
                     if ($score >= 24 && $score <= 35) return 'regulation_adequate_balance';
                     if ($score >= 36) return 'regulation_great_capacity';
@@ -50,11 +61,19 @@ class TMMS24Facade {
     }
 
     // Obtiene la interpretación de una puntuación según el baremo actualizado
-    public static function get_interpretation($dimension, $score, $gender, $long = false) {
+    public static function get_interpretation($dimension, $score, $gender, $long = false, $teacher_mode = false) {
         $key = self::resolve_interpretation_key($dimension, $score, $gender);
         if (!$key) {
             return get_string('not_determined', 'block_tmms_24');
         }
+        
+        if ($long && $teacher_mode) {
+             $teacher_key = $key . '_long_teacher';
+             // Optimization: Try to use the teacher string directly.
+             // If string_exists check was failing due to cache or context, this will expose the localized string or [[...]]
+             return get_string($teacher_key, 'block_tmms_24'); 
+        }
+        
         return get_string($long ? $key . '_long' : $key, 'block_tmms_24');
     }
     
@@ -124,25 +143,155 @@ class TMMS24Facade {
         ];
     }
 
-    public static function get_all_interpretations_long($scores, $gender) {
+    public static function get_all_interpretations_long($scores, $gender, $teacher_mode = false) {
         return [
-            'percepcion' => self::get_interpretation('percepcion', $scores['percepcion'], $gender, true),
-            'comprension' => self::get_interpretation('comprension', $scores['comprension'], $gender, true),
-            'regulacion' => self::get_interpretation('regulacion', $scores['regulacion'], $gender, true)
+            'percepcion' => self::get_interpretation('percepcion', $scores['percepcion'], $gender, true, $teacher_mode),
+            'comprension' => self::get_interpretation('comprension', $scores['comprension'], $gender, true, $teacher_mode),
+            'regulacion' => self::get_interpretation('regulacion', $scores['regulacion'], $gender, true, $teacher_mode)
         ];
     }
 
+    public static function prepare_results_data($entry, $courseid, $is_teacher_view = false, $back_url = '') {
+        $responses = [];
+        for ($i = 1; $i <= 24; $i++) { $item = 'item' . $i; $responses[] = $entry->$item; }
+        $scores = self::calculate_scores($responses);
+        
+        $interpretations = self::get_all_interpretations($scores, $entry->gender);
+        // Use teacher mode for long interpretations if requested
+        $interpretations_long = self::get_all_interpretations_long($scores, $entry->gender, $is_teacher_view);
+        
+        // Build Dimensions Array
+        $dim_configs = [
+            'percepcion' => ['title' => get_string('perception', 'block_tmms_24'), 'color' => '#ff6600', 'bg' => '#ffcc99', 'icon' => 'fa-eye'],
+            'comprension' => ['title' => get_string('comprehension', 'block_tmms_24'), 'color' => '#ff8533', 'bg' => '#ffd699', 'icon' => 'fa-lightbulb-o'],
+            'regulacion' => ['title' => get_string('regulation', 'block_tmms_24'), 'color' => '#ffaa66', 'bg' => '#ffe0b3', 'icon' => 'fa-sliders']
+        ];
+        
+        $dimensions = [];
+        foreach (['percepcion', 'comprension', 'regulacion'] as $key) {
+            $score = $scores[$key];
+            $conf = $dim_configs[$key];
+            $dimensions[] = [
+                'key' => $key,
+                'title' => $conf['title'],
+                'score' => $score,
+                'color' => $conf['color'],
+                'bg_color' => $conf['bg'],
+                'icon' => $conf['icon'],
+                'interpretation_short' => $interpretations[$key],
+                'interpretation_long' => $interpretations_long[$key],
+                'progress_width' => ($score / 40) * 100,
+                'goal_text' => self::get_goal_text($key, $entry->gender)
+            ];
+        }
+
+        $user = \core_user::get_user($entry->user);
+        
+        $gender_display = self::get_gender_label($entry->gender);
+        $gender_icon = 'fa-genderless';
+        $gender_color_style = 'color: #6c757d;'; // Default neutral (grey)
+        
+        $gender = isset($entry->gender) ? $entry->gender : '';
+        
+        // Handle both code ('M', 'F') and full text ('masculino', 'femenino') cases as requested
+        if ($gender === 'M' || strtolower($gender) === 'masculino') {
+            $gender_icon = 'fa-mars';
+            $gender_color_style = 'color: #007bff;'; // Bootstrap Primary Blue
+        } elseif ($gender === 'F' || strtolower($gender) === 'femenino') {
+            $gender_icon = 'fa-venus';
+            $gender_color_style = 'color: #e83e8c;'; // Bootstrap Pink / standard pink
+        } elseif ($gender === 'prefiero_no_decir' || strtolower($gender) === 'prefiero no decir') {
+            $gender_icon = 'fa-user-secret';
+            $gender_color_style = 'color: #6c757d;'; // Secondary Grey
+        }
+
+        $data = [
+            'is_completed' => true,
+            'student_name' => $is_teacher_view ? fullname($user) : null, // Only show name header if teacher view
+            'firstname' => $user->firstname, // Some templates might use this
+            'date' => userdate($entry->created_at, get_string('strftimedatetimeshort')),
+            'date_label' => get_string('date_completed', 'block_tmms_24'),
+            'age' => $entry->age ? $entry->age : '-',
+            'age_label' => get_string('age', 'block_tmms_24'),
+            'gender_display' => $gender_display,
+            'gender_label' => get_string('gender', 'block_tmms_24'),
+            'gender_icon' => $gender_icon,
+            'gender_color_style' => $gender_color_style,
+            'dimensions' => $dimensions,
+            'download_csv_url' => (new moodle_url('/blocks/tmms_24/export.php', ['cid' => $courseid, 'userid' => $entry->user, 'format' => 'csv']))->out(false),
+            'download_json_url' => (new moodle_url('/blocks/tmms_24/export.php', ['cid' => $courseid, 'userid' => $entry->user, 'format' => 'json']))->out(false),
+        ];
+
+        if ($back_url) {
+            if ($is_teacher_view) {
+                $data['back_teacher_url'] = $back_url;
+                $data['show_actions'] = true; 
+            } else {
+                $data['back_course_url'] = $back_url;
+                $data['show_actions'] = false;
+            }
+        }
+
+        // Add questionnaire responses data
+        // Reuse logic similar to test_form but read-only
+        $scale_options = [];
+        for ($i = 1; $i <= 5; $i++) {
+            $raw = get_string('scale_' . $i, 'block_tmms_24');
+            $label = preg_replace('/^\s*\d+\s*[=:\-–—\.]+\s*/u', '', $raw);
+            $scale_options[] = ['value' => $i, 'label' => trim($label)];
+        }
+
+        $items_data = [];
+        $raw_items = self::get_tmms24_items();
+        foreach ($raw_items as $number => $text) {
+            $itemfield = 'item' . $number;
+            $saved_value = (isset($entry->$itemfield)) ? (int)$entry->$itemfield : null;
+            
+            // For read-only display, we just need the selected label or something similar
+            // But let's build a structure that allows "simulating" the form in disabled mode or just a list
+            $selected_label = '-';
+            foreach ($scale_options as $opt) {
+                if ($opt['value'] === $saved_value) {
+                    $selected_label = $opt['label'];
+                    break;
+                }
+            }
+
+            $percentage = ($saved_value / 5) * 100;
+
+            $items_data[] = [
+                'number' => $number,
+                'text' => $text,
+                'response_value' => $saved_value,
+                'response_label' => $selected_label,
+                'percentage' => $percentage,
+                'color' => '#ff6600', // Official block color for neutrality
+                'selected_1' => ($saved_value === 1),
+                'selected_2' => ($saved_value === 2),
+                'selected_3' => ($saved_value === 3),
+                'selected_4' => ($saved_value === 4),
+                'selected_5' => ($saved_value === 5),
+            ];
+        }
+        $data['questionnaire_results'] = $items_data;
+        $data['questionnaire_label'] = get_string('questionnaire', 'block_tmms_24');
+        
+        return $data;
+    }
+
     public static function get_goal_text($dim, $gender) {
+        $is_male = ($gender === 'M' || strtolower($gender) === 'masculino');
+        
         if ($dim === 'percepcion') {
-            $range = ($gender === 'M') ? '22-32' : '25-35';
-            $optimal = ($gender === 'M') ? '27' : '30';
+            $range = $is_male ? '22-32' : '25-35';
+            $optimal = $is_male ? '27' : '30';
             $a = new stdClass();
             $a->range = $range;
             $a->optimal = $optimal;
             return get_string('goal_perception', 'block_tmms_24', $a);
         } else {
             // Comprension / Regulacion
-            $min = ($gender === 'M') ? 36 : 35;
+            $min = $is_male ? 36 : 35;
             $a = new stdClass();
             $a->range = $min . '-40';
             return get_string('goal_linear', 'block_tmms_24', $a);
@@ -154,13 +303,13 @@ class TMMS24Facade {
             return get_string('not_determined', 'block_tmms_24');
         }
         
-        switch ($gender) {
-            case 'M':
-                return get_string('gender_male', 'block_tmms_24');
-            case 'F':
-                return get_string('gender_female', 'block_tmms_24');
-            default:
-                return get_string('gender_prefer_not_say', 'block_tmms_24');
+        $g = strtolower($gender);
+        if ($g === 'm' || $g === 'masculino') {
+            return get_string('gender_male', 'block_tmms_24');
+        } elseif ($g === 'f' || $g === 'femenino') {
+            return get_string('female', 'block_tmms_24');
+        } else {
+            return get_string('gender_prefer_not_say', 'block_tmms_24');
         }
     }
     
@@ -180,142 +329,15 @@ class TMMS24Facade {
     }
 
     public static function render_results_html($scores, $interpretations, $interpretations_long, $gender, $entry, $completion_info = null) {
-        $output = '';
-        
-        // Display results summary
-        $output .= '<div class="block_tmms_24_results_summary">';
-        $output .= '<div class="row mb-4">';
-        
-        // Perception
-        $output .= '<div class="col-md-4 mb-4">';
-        $output .= '<div class="card" style="border-color: #ff6600 !important;">';
-        $output .= '<div class="card-body text-center">';
-        $output .= '<h5>' . get_string('perception', 'block_tmms_24') . '</h5>';
-        $output .= '<h3 style="color: #ff6600;">' . $scores['percepcion'] . '/40</h3>';
-        $output .= '<p class="mb-0">' . $interpretations['percepcion'] . '</p>';
-        $output .= '<div class="small text-muted mt-2" style="font-size: 0.85em; color: #999 !important;"><i class="fa fa-bullseye"></i> ' . self::get_goal_text('percepcion', $gender) . '</div>';
-        $output .= '</div></div></div>';
+        global $PAGE;
 
-        // Comprehension
-        $output .= '<div class="col-md-4 mb-4">';
-        $output .= '<div class="card" style="border-color: #ff8533 !important;">';
-        $output .= '<div class="card-body text-center">';
-        $output .= '<h5>' . get_string('comprehension', 'block_tmms_24') . '</h5>';
-        $output .= '<h3 style="color: #ff8533;">' . $scores['comprension'] . '/40</h3>';
-        $output .= '<p class="mb-0">' . $interpretations['comprension'] . '</p>';
-        $output .= '<div class="small text-muted mt-2" style="font-size: 0.85em; color: #999 !important;"><i class="fa fa-bullseye"></i> ' . self::get_goal_text('comprension', $gender) . '</div>';
-        $output .= '</div></div></div>';
+        // Use the unified modern template for results.
+        // We ignore the passed pre-calculated scores/interpretations to ensure consistency with the centralized logic in prepare_results_data.
+        // We pass empty back_url because view.php renders its own buttons.
+        $courseid = $PAGE->course->id;
+        $data = self::prepare_results_data($entry, $courseid, false, '');
 
-        // Regulation
-        $output .= '<div class="col-md-4 mb-4">';
-        $output .= '<div class="card" style="border-color: #ffaa66 !important;">';
-        $output .= '<div class="card-body text-center">';
-        $output .= '<h5>' . get_string('regulation', 'block_tmms_24') . '</h5>';
-        $output .= '<h3 style="color: #ffaa66;">' . $scores['regulacion'] . '/40</h3>';
-        $output .= '<p class="mb-0">' . $interpretations['regulacion'] . '</p>';
-        $output .= '<div class="small text-muted mt-2" style="font-size: 0.85em; color: #999 !important;"><i class="fa fa-bullseye"></i> ' . self::get_goal_text('regulacion', $gender) . '</div>';
-        $output .= '</div></div></div>';
-
-        $output .= '</div></div>'; // End row, End summary
-
-        // Test completion info
-        if ($completion_info) {
-            $output .= '<div class="row mb-4">';
-            $output .= '<div class="col-md-4">';
-            $output .= '<strong>' . get_string('date_completed', 'block_tmms_24') . ':</strong> ';
-            $output .= $completion_info['date'];
-            $output .= '</div>';
-            $output .= '<div class="col-md-4">';
-            $output .= '<strong>' . get_string('age', 'block_tmms_24') . ':</strong> ';
-            $output .= $completion_info['age'];
-            $output .= '</div>';
-            $output .= '<div class="col-md-4">';
-            $output .= '<strong>' . get_string('gender', 'block_tmms_24') . ':</strong> ';
-            $output .= $completion_info['gender_display'];
-            $output .= '</div>';
-            $output .= '</div>';
-        }
-
-        // Interpretation section (detailed)
-        $output .= '<div class="card mt-4 mb-4">';
-        $output .= '<div class="card-header">';
-        $output .= '<h5 class="mb-0">' . get_string('results_interpretation', 'block_tmms_24') . '</h5>';
-        $output .= '</div>';
-        $output .= '<div class="card-body">';
-        $output .= '<div class="row">';
-        $output .= '<div class="col-md-4 mb-3 mb-md-0"><strong>' . get_string('perception', 'block_tmms_24') . ':</strong><br>' . s($interpretations['percepcion']) . '<div class="mt-2 text-muted">' . s($interpretations_long['percepcion']) . '</div></div>';
-        $output .= '<div class="col-md-4 mb-3 mb-md-0"><strong>' . get_string('comprehension', 'block_tmms_24') . ':</strong><br>' . s($interpretations['comprension']) . '<div class="mt-2 text-muted">' . s($interpretations_long['comprension']) . '</div></div>';
-        $output .= '<div class="col-md-4 mb-3 mb-md-0"><strong>' . get_string('regulation', 'block_tmms_24') . ':</strong><br>' . s($interpretations['regulacion']) . '<div class="mt-2 text-muted">' . s($interpretations_long['regulacion']) . '</div></div>';
-        $output .= '</div></div></div>';
-
-        // Detailed responses
-        $output .= '<div class="card mt-4">';
-        $output .= '<div class="card-header">';
-        $output .= '<h5 class="mb-0">' . get_string('detailed_responses', 'block_tmms_24') . '</h5>';
-        $output .= '</div>';
-        $output .= '<div class="card-body">';
-        $output .= '<div class="mb-3">';
-        $output .= '<strong>' . get_string('response_scale_legend', 'block_tmms_24') . ':</strong> ';
-        $output .= get_string('scale_1', 'block_tmms_24') . ', ';
-        $output .= get_string('scale_2', 'block_tmms_24') . ', ';
-        $output .= get_string('scale_3', 'block_tmms_24') . ', ';
-        $output .= get_string('scale_4', 'block_tmms_24') . ', ';
-        $output .= get_string('scale_5', 'block_tmms_24');
-        $output .= '</div>';
-        
-        $dimensions = [
-            'perception' => range(1, 8),
-            'comprehension' => range(9, 16), 
-            'regulation' => range(17, 24)
-        ];
-
-        foreach ($dimensions as $dimension => $items) {
-            $output .= '<div class="card mb-3">';
-            $output .= '<div class="card-header">';
-            $output .= '<h6 class="mb-0">' . get_string($dimension, 'block_tmms_24') . '</h6>';
-            $output .= '</div>';
-            $output .= '<div class="card-body">';
-            $output .= '<div class="table-responsive">';
-            $output .= '<table class="table table-sm">';
-            
-            foreach ($items as $item_num) {
-                $item_key = 'item' . $item_num;
-                $response_value = isset($entry->$item_key) ? $entry->$item_key : 0;
-                
-                // Calculamos el porcentaje (suponiendo escala 1 a 5)
-                $percent = ($response_value / 5) * 100;
-                
-                $output .= '<tr>';
-                // Columna del número de pregunta
-                $output .= '<td style="width: 40px;" class="text-center text-muted">' . $item_num . '.</td>';
-                
-                // Columna del texto de la pregunta
-                $output .= '<td>' . get_string('item' . $item_num, 'block_tmms_24') . '</td>';
-                
-                // Columna visual (Barra + Número)
-                $output .= '<td style="width: 180px; vertical-align: middle;">';
-                $output .= '<div class="d-flex align-items-center">';
-                    
-                // 1. La barra de progreso
-                $output .= '<div class="progress flex-grow-1 mr-2" style="height: 8px; background-color: #ffebe0;">';
-                $output .= '<div class="progress-bar" role="progressbar" style="height: 8px; width: ' . $percent . '%; background-color: #ff6600;" aria-valuenow="' . $response_value . '" aria-valuemin="0" aria-valuemax="5"></div>';
-                $output .= '</div>';
-                
-                // 2. El número a la derecha
-                $output .= '<span class="text-muted font-weight-bold" style="font-size: 0.9em; white-space: nowrap;">';
-                $output .= $response_value . ' / 5';
-                $output .= '</span>';
-                $output .= '</div>';
-                $output .= '</td>';
-                $output .= '</tr>';
-            }
-            
-            $output .= '</table></div></div></div>';
-        }
-        
-        $output .= '</div></div>'; // End card-body, End card
-
-        return $output;
+        return $PAGE->get_renderer('core')->render_from_template('block_tmms_24/results_details', $data);
     }
 
     /**
@@ -439,7 +461,7 @@ class block_tmms_24 extends block_base {
     }
     
     function get_content() {
-        global $USER, $DB, $COURSE;
+        global $USER, $DB, $COURSE, $OUTPUT;
         
         if ($this->content !== null) {
             return $this->content;
@@ -486,9 +508,7 @@ class block_tmms_24 extends block_base {
     }
     
     private function get_student_results($entry) {
-        global $COURSE, $USER;
-        
-        $output = '';
+        global $COURSE, $OUTPUT;
         
         // Build responses keyed by item1..item24 to preserve ordering.
         $responsesArray = [];
@@ -513,30 +533,6 @@ class block_tmms_24 extends block_base {
         
         $interpretations = TMMS24Facade::get_all_interpretations($scores, $entry->gender);
         
-        $output .= '<div class="tmms-results-block">';
-        
-        // Header with success icon
-        $output .= '<div class="tmms-header text-center mb-3">';
-        $output .= '<div style="position: relative; display: inline-block; line-height: 0;">';
-        $output .= $this->get_tmms_24_icon('4em', 'display: block;', false);
-        $output .= '<i class="fa fa-check" style="position: absolute; top: -6px; right: -9px; font-size: 1.4em; background: white; border-radius: 50%; line-height: 1;"></i>';
-        $output .= '</div>';
-        $output .= '<h6 class="mt-2 mb-1">' . get_string('test_completed', 'block_tmms_24') . '</h6>';
-        $output .= '<small class="text-muted">' . get_string('emotional_intelligence_results', 'block_tmms_24') . '</small>';
-        $output .= '</div>';
-        
-        // Test description
-        $output .= '<div class="tmms-description mb-3" style="background: #f8f9fa; padding: 10px 12px; border-radius: 5px; border-left: 3px solid #ff6600;">';
-        $output .= '<small class="text-muted" style="line-height: 1.5;">';
-        $output .= '<i class="fa fa-info-circle" style="color: #ff6600;"></i> ';
-        $output .= get_string('test_description_short', 'block_tmms_24');
-        $output .= '</small>';
-        $output .= '</div>';
-        
-        // Your emotional intelligence
-        $output .= '<div class="tmms-top-section mb-3">';
-        
-        // Dimension names mapping
         $dimension_names = [
             'percepcion' => get_string('perception', 'block_tmms_24'),
             'comprension' => get_string('comprehension', 'block_tmms_24'),
@@ -560,26 +556,33 @@ class block_tmms_24 extends block_base {
             }
         }
         
+        // Datos comunes para pasar al template
+        $data = [
+            'icon' => $this->get_tmms_24_icon('4em', 'display: block;', false),
+            'title' => get_string('test_completed', 'block_tmms_24'),
+            'subtitle' => get_string('emotional_intelligence_results', 'block_tmms_24'),
+            'description' => get_string('test_description_short', 'block_tmms_24'),
+            'all_bad' => $all_bad,
+            'detailed_link' => (new moodle_url('/blocks/tmms_24/view.php', ['cid' => $COURSE->id]))->out(false),
+            'view_detailed_str' => get_string('view_detailed_results', 'block_tmms_24')
+        ];
+        
         if ($all_bad) {
             // Case: All dimensions need improvement
-            $output .= '<h6 class="mb-2">' . get_string('your_dimensions', 'block_tmms_24') . '</h6>';
+            $data['your_dimensions_title'] = get_string('your_dimensions', 'block_tmms_24');
+            $data['dimensions'] = [];
             
             foreach ($scores as $dimension => $score) {
                 $interpretation = isset($interpretations[$dimension]) ? $interpretations[$dimension] : get_string('not_determined', 'block_tmms_24');
                 $goal_text = TMMS24Facade::get_goal_text($dimension, $gender);
                 
-                $output .= '<div class="card border-secondary mb-2" style="border-color: #ffaa66 !important;">';
-                $output .= '<div class="card-body p-2">';
-                $output .= '<div class="d-flex justify-content-between align-items-center mb-1">';
-                $output .= '<strong class="small">' . $dimension_names[$dimension] . '</strong>';
-                $output .= '<span class="small text-muted">' . $score . '/40</span>';
-                $output .= '</div>';
-                $output .= '<div class="small text-muted" style="line-height: 1.2;">' . $interpretation . '</div>';
-                $output .= '<div class="small text-muted mt-1" style="font-size: 0.85em; color: #999 !important;"><i class="fa fa-bullseye"></i> ' . $goal_text . '</div>';
-                $output .= '</div>';
-                $output .= '</div>';
+                $data['dimensions'][] = [
+                    'name' => $dimension_names[$dimension],
+                    'score' => $score,
+                    'interpretation' => $interpretation,
+                    'goal_text' => $goal_text
+                ];
             }
-            
         } else {
             // Case: At least one good dimension
             // Find max score
@@ -593,49 +596,43 @@ class block_tmms_24 extends block_base {
                 }
             }
             
-            // Title based on count
-            if (count($star_dimensions) > 1) {
-                $output .= '<h6 class="mb-2">' . get_string('your_star_dimensions', 'block_tmms_24') . '</h6>';
-            } else {
-                $output .= '<h6 class="mb-2">' . get_string('your_star_dimension', 'block_tmms_24') . '</h6>';
-            }
+            $data['star_dimensions_title'] = count($star_dimensions) > 1 ? 
+                get_string('your_star_dimensions', 'block_tmms_24') : 
+                get_string('your_star_dimension', 'block_tmms_24');
             
-            // Render Star Dimensions
+            $data['star_dimensions'] = [];
+            $data['has_star_dimensions'] = true;
+
             foreach ($star_dimensions as $dim) {
                 $score = $scores[$dim];
                 $interpretation = isset($interpretations[$dim]) ? $interpretations[$dim] : get_string('not_determined', 'block_tmms_24');
                 $goal_text = TMMS24Facade::get_goal_text($dim, $gender);
                 
-                $output .= '<div class="card border-primary mb-3" style="border-left: 4px solid #ff6600 !important; border-color: #ff6600 !important;">';
-                $output .= '<div class="card-body p-3">';
-                $output .= '<div class="d-flex justify-content-between align-items-center mb-2">';
-                $output .= '<div>';
-                $output .= '<strong><i class="fa fa-star text-warning"></i> ' . $dimension_names[$dim] . '</strong><br>';
-                $output .= '<small class="text-muted">' . $score . '/40 ' . get_string('points', 'block_tmms_24') . '</small>';
-                $output .= '</div>';
-                $output .= '</div>';
+                $reason_icon = '';
+                $reason_text = '';
                 
-                $output .= '<div class="small text-muted mt-2" style="font-style: italic; line-height: 1.3;">' . $interpretation . '</div>';
-                $output .= '<div class="small text-muted mt-1" style="font-size: 0.85em; color: #999 !important;"><i class="fa fa-bullseye"></i> ' . $goal_text . '</div>';
-                
-                // Explanation
-                $output .= '<div class="mt-2 mb-2">';
-                $output .= '<span class="badge badge-light text-wrap text-left" style="font-weight: normal; color: #666; background-color: #f8f9fa; border: 1px solid #eee; width: 100%; display: block; padding: 8px;">';
-                if ($dim === 'percepcion') {
+                 if ($dim === 'percepcion') {
                      $optimal = ($gender === 'M') ? 27 : 30;
+                     $reason_icon = '<i class="fa fa-balance-scale text-primary mr-1"></i>';
                      if ((int)$score === $optimal) {
-                         $output .= '<i class="fa fa-balance-scale text-primary mr-1"></i> ' . get_string('star_dimension_reason_perception_exact', 'block_tmms_24');
+                         $reason_text = get_string('star_dimension_reason_perception_exact', 'block_tmms_24');
                      } else {
-                         $output .= '<i class="fa fa-balance-scale text-primary mr-1"></i> ' . get_string('star_dimension_reason_perception_close', 'block_tmms_24');
+                         $reason_text = get_string('star_dimension_reason_perception_close', 'block_tmms_24');
                      }
                 } else {
-                     $output .= '<i class="fa fa-arrow-up text-success mr-1"></i> ' . get_string('star_dimension_reason_other', 'block_tmms_24');
+                     $reason_icon = '<i class="fa fa-arrow-up text-success mr-1"></i>';
+                     $reason_text = get_string('star_dimension_reason_other', 'block_tmms_24');
                 }
-                $output .= '</span>';
-                $output .= '</div>';
                 
-                $output .= '</div>';
-                $output .= '</div>';
+                $data['star_dimensions'][] = [
+                    'name' => $dimension_names[$dim],
+                    'score' => $score,
+                    'points_str' => get_string('points', 'block_tmms_24'),
+                    'interpretation' => $interpretation,
+                    'goal_text' => $goal_text,
+                    'reason_icon' => $reason_icon,
+                    'reason_text' => $reason_text
+                ];
             }
             
             // Render Other Dimensions
@@ -646,35 +643,27 @@ class block_tmms_24 extends block_base {
                 return $normalized_scores[$b] <=> $normalized_scores[$a];
             });
 
-            if (!empty($other_dimensions)) {
-                $output .= '<div class="tmms-other-dimensions mb-3">';
-                $output .= '<h6 class="mb-2">' . get_string('other_dimensions', 'block_tmms_24') . '</h6>';
+            $data['has_other_dimensions'] = !empty($other_dimensions);
+            if ($data['has_other_dimensions']) {
+                $data['other_dimensions_title'] = get_string('other_dimensions', 'block_tmms_24');
+                $data['other_dimensions'] = [];
+                
                 foreach ($other_dimensions as $dim) {
                     $score = $scores[$dim];
                     $interpretation = isset($interpretations[$dim]) ? $interpretations[$dim] : get_string('not_determined', 'block_tmms_24');
                     $goal_text = TMMS24Facade::get_goal_text($dim, $gender);
                     
-                    $output .= '<div class="card border-secondary mb-2" style="border-color: #ffaa66 !important;">';
-                    $output .= '<div class="card-body p-2">';
-                    $output .= '<div class="d-flex justify-content-between align-items-center mb-1">';
-                    $output .= '<strong class="small">' . $dimension_names[$dim] . '</strong>';
-                    $output .= '<span class="small text-muted">' . $score . '/40</span>';
-                    $output .= '</div>';
-                    $output .= '<div class="small text-muted" style="line-height: 1.2;">' . $interpretation . '</div>';
-                    $output .= '<div class="small text-muted mt-1" style="font-size: 0.85em; color: #999 !important;"><i class="fa fa-bullseye"></i> ' . $goal_text . '</div>';
-                    $output .= '</div>';
-                    $output .= '</div>';
+                    $data['other_dimensions'][] = [
+                        'name' => $dimension_names[$dim],
+                        'score' => $score,
+                        'interpretation' => $interpretation,
+                        'goal_text' => $goal_text
+                    ];
                 }
-                $output .= '</div>';
             }
         }
-        $url = new moodle_url('/blocks/tmms_24/view.php', ['cid' => $COURSE->id]);
-        $output .= '<div class="tmms-actions text-center mt-3">';
-        $output .= '<a href="' . $url . '" class="btn btn-sm" style="background: linear-gradient(135deg, #ff6600 0%, #e65c00 100%); border-color: #ff6600; color: #fff;">';
-        $output .= '<i class="fa fa-chart-bar"></i> ' . get_string('view_detailed_results', 'block_tmms_24');
-        $output .= '</a>';
-        $output .= '</div>';
-        $output .= '</div>';        return $output;
+        
+        return $OUTPUT->render_from_template('block_tmms_24/results_summary', $data);
     }
     
     /**
@@ -685,7 +674,7 @@ class block_tmms_24 extends block_base {
      * @return string HTML img tag with the SVG icon
      */
     private function get_tmms_24_icon($size = '1.8em', $additional_style = '', $centered = false) {
-        $iconurl = new moodle_url('/blocks/tmms_24/pix/tmms_24_icon.svg');
+        $iconurl = new moodle_url('/blocks/tmms_24/pix/icon.svg');
         $style = 'width: ' . $size . '; height: ' . $size . '; vertical-align: middle; float: none !important;';
         if ($centered) {
             $style .= ' display: block; margin: 0 auto;';
@@ -697,27 +686,19 @@ class block_tmms_24 extends block_base {
     }
     
     private function get_test_invitation() {
-        global $COURSE, $USER, $DB;
-        
-        $output = '';
+        global $COURSE, $USER, $DB, $OUTPUT;
         
         // Check for response in tmms_24 table (user only takes test once)
         $response = $DB->get_record('tmms_24', array('user' => $USER->id));
         
-        $output .= '<div class="tmms-invitation-block">';
-        
-        // Header with TMMS-24 icon
-        $output .= '<div class="tmms-header text-center mb-3">';
-        $output .= $this->get_tmms_24_icon('4em', '', true);
-        $output .= '<h6 class="mt-2 mb-1 font-weight-bold">' . get_string('emotional_intelligence_test', 'block_tmms_24') . '</h6>';
-        $output .= '<small class="text-muted">' . get_string('discover_your_emotional_skills', 'block_tmms_24') . '</small>';
-        $output .= '</div>';
+        $data = [
+            'icon' => $this->get_tmms_24_icon('4em', '', true),
+            'title' => get_string('emotional_intelligence_test', 'block_tmms_24'),
+            'subtitle' => get_string('discover_your_emotional_skills', 'block_tmms_24'),
+        ];
         
         // Initialize variables
         $answered_count = 0;
-        $button_text = '';
-        $button_icon = '';
-        $button_class = '';
         
         if ($response && !$response->is_completed) {
             // Test in progress - calculate progress
@@ -733,236 +714,133 @@ class block_tmms_24 extends block_base {
                 $progress_percentage = ($answered_count / 24) * 100;
                 $all_answered = ($answered_count == 24);
                 
-                // Description section
-                $output .= '<div class="tmms-description mb-3" style="background: white; padding: 10px 12px; border-radius: 5px; border-left: 3px solid #ff6600;">';
-                $output .= '<small class="text-muted" style="line-height: 1.5;">';
-                $output .= '<i class="fa fa-info-circle" style="color: #ff6600;"></i> ';
-                $output .= get_string('test_description_short', 'block_tmms_24');
-                $output .= '</small>';
-                $output .= '</div>';
+                $data['in_progress'] = true;
+                $data['description_short'] = get_string('test_description_short', 'block_tmms_24');
+                $data['progress_title'] = get_string('your_progress', 'block_tmms_24');
+                $data['answered_count'] = $answered_count;
+                $data['progress_percentage'] = $progress_percentage;
+                $data['progress_percentage_formatted'] = number_format($progress_percentage, 1);
+                $data['completed_status'] = get_string('completed_status', 'block_tmms_24');
             
                 if ($all_answered) {
-                    // Show special message when all answered but not finished
-                    $output .= '<div class="alert alert-warning mb-3" style="padding: 12px 15px; margin-bottom: 15px; border-left: 4px solid #ffc107; background-color: #fff3cd; border-radius: 4px;">';
-                    $output .= '<div style="display: flex; align-items: start;">';
-                    $output .= '<i class="fa fa-exclamation-triangle" style="color: #856404; margin-right: 10px; margin-top: 2px; font-size: 1.2em;"></i>';
-                    $output .= '<div>';
-                    $output .= '<strong style="color: #856404;">' . get_string('all_answered_title', 'block_tmms_24') . '</strong><br>';
-                    $output .= '<small style="color: #856404;">' . get_string('all_answered_message', 'block_tmms_24') . '</small>';
-                    $output .= '</div>';
-                    $output .= '</div>';
-                    $output .= '</div>';
+                    $data['all_answered'] = true;
+                    $data['all_answered_title'] = get_string('all_answered_title', 'block_tmms_24');
+                    $data['all_answered_message'] = get_string('all_answered_message', 'block_tmms_24');
                     
-                    $button_text = get_string('finish_test', 'block_tmms_24');
-                    $button_icon = 'fa-flag-checkered';
-                    $button_class = 'btn-success';
+                    $data['button_text'] = get_string('finish_test', 'block_tmms_24');
+                    $data['button_icon'] = 'fa-flag-checkered';
+                    $data['button_class'] = 'btn-success';
                 } else {
-                    $button_text = get_string('continue_test', 'block_tmms_24');
-                    $button_icon = 'fa-play';
-                    $button_class = 'btn-primary';
+                    $data['button_text'] = get_string('continue_test', 'block_tmms_24');
+                    $data['button_icon'] = 'fa-play';
+                    $data['button_class'] = 'btn-primary';
                 }
-                
-                // Show progress bar with TMMS colors
-                $output .= '<div class="tmms-progress mb-3">';
-                $output .= '<div class="d-flex justify-content-between align-items-center mb-2">';
-                $output .= '<span class="small font-weight-bold">' . get_string('your_progress', 'block_tmms_24') . '</span>';
-                $output .= '<span class="small text-muted">' . $answered_count . '/24</span>';
-                $output .= '</div>';
-                $output .= '<div class="progress mb-2" style="height: 8px; background-color: #ffebe0;">';
-                $output .= '<div class="progress-bar" style="width: ' . $progress_percentage . '%; background: linear-gradient(90deg, #ffaa66 0%, #ff6600 100%);"></div>';
-                $output .= '</div>';
-                $output .= '<small class="text-muted">' . number_format($progress_percentage, 1) . '% ' . get_string('completed_status', 'block_tmms_24') . '</small>';
-                $output .= '</div>';
             }
         }
         
         // Show test description for new test (when no response or no answers yet)
         if (!$response || ($response && !$response->is_completed && $answered_count == 0)) {
-            // Show test description for new test
-            $output .= '<div class="tmms-description mb-3">';
-            $output .= '<div class="card border-info">';
-            $output .= '<div class="card-body p-3">';
-            $output .= '<h6 class="card-title font-weight-bold">';
-            $output .= '<i class="fa fa-info-circle text-info"></i> ';
-            $output .= get_string('what_is_tmms24', 'block_tmms_24');
-            $output .= '</h6>';
-            $output .= '<p class="card-text small mb-2">' . get_string('test_description_short', 'block_tmms_24') . '</p>';
-            $output .= '<ul class="list-unstyled small mb-0">';
-            $output .= '<li><i class="fa fa-check text-success"></i> ' . get_string('feature_24_questions', 'block_tmms_24') . '</li>';
-            $output .= '<li><i class="fa fa-check text-success"></i> ' . get_string('feature_3_dimensions', 'block_tmms_24') . '</li>';
-            $output .= '<li><i class="fa fa-check text-success"></i> ' . get_string('feature_instant_results', 'block_tmms_24') . '</li>';
-            $output .= '</ul>';
-            $output .= '</div>';
-            $output .= '</div>';
-            $output .= '</div>';
-            
-            $button_text = get_string('start_test', 'block_tmms_24');
-            $button_icon = 'fa-rocket';
-            $button_class = 'btn-primary';
-            $scroll_param = null;
+             $data['in_progress'] = false;
+             $data['what_is_title'] = get_string('what_is_tmms24', 'block_tmms_24');
+             $data['description_short'] = get_string('test_description_short', 'block_tmms_24');
+             $data['feature_24'] = get_string('feature_24_questions', 'block_tmms_24');
+             $data['feature_3'] = get_string('feature_3_dimensions', 'block_tmms_24');
+             $data['feature_results'] = get_string('feature_instant_results', 'block_tmms_24');
+             
+             $data['button_text'] = get_string('start_test', 'block_tmms_24');
+             $data['button_icon'] = 'fa-rocket';
+             $data['button_class'] = 'btn-primary';
         }
-        
-        // Call to action
-        $output .= '<div class="tmms-actions text-center">';
         
         $url_params = array('cid' => $COURSE->id);
         if (isset($all_answered) && $all_answered) {
             $url_params['scroll_to_finish'] = 1;
         }
-        $url = new moodle_url('/blocks/tmms_24/view.php', $url_params);
+        $data['link_url'] = (new moodle_url('/blocks/tmms_24/view.php', $url_params))->out(false);
         
-        $button_style = 'background-color: #ff6600; border-color: #ff6600; color: white;';
-        if ($button_class == 'btn-success') {
-            $button_style = ''; // Use default success style
+        if ($data['button_class'] != 'btn-success') {
+             $data['button_style'] = 'background-color: #ff6600; border-color: #ff6600; color: white;';
         }
-        
-        $output .= '<a href="' . $url . '" class="btn ' . $button_class . ' btn-block" style="' . $button_style . '">';
-        $output .= '<i class="fa ' . $button_icon . '"></i> ' . $button_text;
-        $output .= '</a>';
-        $output .= '</div>';
-        
-        $output .= '</div>';
-        
-        return $output;
+
+        return $OUTPUT->render_from_template('block_tmms_24/test_invitation', $data);
     }
     
     private function get_management_summary() {
-        global $DB, $COURSE;
+        global $DB, $COURSE, $OUTPUT;
         
-        $output = '';
-        $output .= '<div class="tmms-management-block">';
-        
-        // Header with icon
-        $output .= '<div class="tmms-header text-center mb-3">';
-        $output .= $this->get_tmms_24_icon('4em', '', true);
-        $output .= '<h6 class="mt-2 mb-1 font-weight-bold">' . get_string('management_title', 'block_tmms_24') . '</h6>';
-        $output .= '<small class="text-muted">' . get_string('course_overview', 'block_tmms_24') . '</small>';
-        $output .= '</div>';
-        
-        // Get course statistics
         $context = context_course::instance($COURSE->id);
-        $enrolled_students = get_enrolled_users($context, 'block/tmms_24:taketest', 0, 'u.id', null, 0, 0, true);
-
-        $student_ids = array();
-        foreach ($enrolled_students as $user) {
-            $candidateid = (int)$user->id;
-            // Defensive: never include teachers/managers/siteadmins in student stats.
-            if (is_siteadmin($candidateid)) {
-                continue;
-            }
-            if (has_capability('block/tmms_24:viewallresults', $context, $candidateid)) {
-                continue;
-            }
-            $student_ids[] = $candidateid;
-        }
         
-        $total_enrolled = count($student_ids);
+        // 1. Get enrolled users SQL (users who CAN take the test)
+        // Optimized: only fetching IDs to properly filter the tmms_24 table
+        [$enrolledsql, $enrolledparams] = get_enrolled_sql($context, 'block/tmms_24:taketest', 0, true);
         
-        // Obtener respuestas solo de estudiantes inscritos
-        $total_completed = 0;
-        $total_in_progress = 0;
-        if (!empty($student_ids)) {
-            list($insql, $params) = $DB->get_in_or_equal($student_ids, SQL_PARAMS_NAMED, 'user');
-            $all_responses = $DB->get_records_select('tmms_24', "user $insql", $params);
+        // 2. Count total enrolled students
+        $total_enrolled = count_enrolled_users($context, 'block/tmms_24:taketest', 0, true);
+        
+        if ($total_enrolled > 0) {
+            // 3. Count completed (is_completed = 1)
+            $sql_completed = "SELECT COUNT(tr.id) 
+                              FROM {tmms_24} tr
+                              JOIN ($enrolledsql) eu ON tr.user = eu.id
+                              WHERE tr.is_completed = 1";
+            $total_completed = $DB->count_records_sql($sql_completed, $enrolledparams);
             
-            // Separar completados de en progreso
-            foreach ($all_responses as $response) {
-                if ($response->is_completed == 1) {
-                    $total_completed++;
-                } else {
-                    // Solo contar como en progreso si tiene al menos 1 respuesta
-                    $has_answers = false;
-                    for ($i = 1; $i <= 24; $i++) {
-                        $item = 'item' . $i;
-                        if (isset($response->$item) && $response->$item !== null) {
-                            $has_answers = true;
-                            break;
-                        }
-                    }
-                    if ($has_answers) {
-                        $total_in_progress++;
-                    }
-                }
-            }
+            // 4. Count in progress (exists but not completed)
+            $sql_inprogress = "SELECT COUNT(tr.id) 
+                               FROM {tmms_24} tr
+                               JOIN ($enrolledsql) eu ON tr.user = eu.id
+                               WHERE tr.is_completed = 0";
+            $total_in_progress = $DB->count_records_sql($sql_inprogress, $enrolledparams);
+        } else {
+            $total_completed = 0;
+            $total_in_progress = 0;
         }
         
         $completion_rate = $total_enrolled > 0 ? ($total_completed / $total_enrolled) * 100 : 0;
         
-        // Quick stats with chaside style
-        $output .= '<div class="tmms-stats mb-3">';
-        $output .= '<div class="row text-center">';
-        
-        // Completion rate
-        $output .= '<div class="col-4">';
-        $output .= '<div class="stat-card">';
-        $output .= '<div class="stat-number text-success">' . number_format($completion_rate, 1) . '%</div>';
-        $output .= '<div class="stat-label">' . get_string('completion_rate', 'block_tmms_24') . '</div>';
-        $output .= '</div>';
-        $output .= '</div>';
-        
-        // Completed tests
-        $output .= '<div class="col-4">';
-        $output .= '<div class="stat-card">';
-        $output .= '<div class="stat-number" style="color: #ff6600;">' . $total_completed . '</div>';
-        $output .= '<div class="stat-label">' . get_string('completed', 'block_tmms_24') . '</div>';
-        $output .= '</div>';
-        $output .= '</div>';
-        
-        // In Progress
-        $output .= '<div class="col-4">';
-        $output .= '<div class="stat-card">';
-        $output .= '<div class="stat-number text-warning">' . $total_in_progress . '</div>';
-        $output .= '<div class="stat-label">' . get_string('in_progress', 'block_tmms_24') . '</div>';
-        $output .= '</div>';
-        $output .= '</div>';
-        
-        $output .= '</div>';
-        $output .= '</div>';
-        
-        // Progress bar overview
-        $output .= '<div class="mb-3">';
-        $output .= '<div class="progress" style="height: 10px;">';
-        $output .= '<div class="progress-bar" style="width: ' . ($completion_rate) . '%; background: linear-gradient(135deg, #ff6600 0%, #e65c00 100%);"></div>';
-        $output .= '</div>';
-        $output .= '<small class="text-muted">' . $total_completed . ' ' . get_string('of', 'block_tmms_24') . ' ' . $total_enrolled . ' ' . get_string('students_completed', 'block_tmms_24') . '</small>';
-        $output .= '</div>';
-        
-        // Recent completions (only completed tests)
-        $recent_completions = array();
-        if (!empty($student_ids)) {
-            list($insql, $params) = $DB->get_in_or_equal($student_ids, SQL_PARAMS_NAMED, 'user');
-            $sql = "SELECT u.firstname, u.lastname, tr.created_at 
+        // Recent completions (fetch minimal data)
+        $recent_completions_data = [];
+        if ($total_completed > 0) {
+            $sql = "SELECT tr.id, u.firstname, u.lastname, tr.created_at 
                     FROM {tmms_24} tr 
                     JOIN {user} u ON tr.user = u.id 
-                    WHERE tr.user $insql AND tr.is_completed = 1
+                    JOIN ($enrolledsql) eu ON tr.user = eu.id
+                    WHERE tr.is_completed = 1
                     ORDER BY tr.created_at DESC";
-            $recent_completions = $DB->get_records_sql($sql, $params, 0, 3);
-        }
-        
-        if ($recent_completions) {
-            $output .= '<div class="recent-completions mt-3">';
-            $output .= '<h6 class="mb-2 font-weight-bold">' . get_string('recent_completions', 'block_tmms_24') . '</h6>';
-            foreach ($recent_completions as $completion) {
-                $completion_date = $completion->created_at ? $completion->created_at : time();
-                $output .= '<div class="d-flex justify-content-between align-items-center mb-1">';
-                $output .= '<span class="small">' . $completion->firstname . ' ' . $completion->lastname . '</span>';
-                $output .= '<span class="badge badge-success small" style="background: linear-gradient(135deg, #ff6600 0%, #e65c00 100%); border-color: #ff6600; color: #fff;">' . userdate($completion_date, get_string('strftimedatefullshort')) . '</span>';
-                $output .= '</div>';
+            // Limit to 3 for performance
+            $recent_recs = $DB->get_records_sql($sql, $enrolledparams, 0, 3);
+            
+            foreach ($recent_recs as $rec) {
+                $completion_date = $rec->created_at ? $rec->created_at : time();
+                $recent_completions_data[] = [
+                    'firstname' => $rec->firstname,
+                    'lastname' => $rec->lastname,
+                    'date' => userdate($completion_date, get_string('strftimedatefullshort'))
+                ];
             }
-            $output .= '</div>';
         }
         
-        // Management actions
-        $url = new moodle_url('/blocks/tmms_24/teacher_view.php', ['courseid' => $COURSE->id]);
-        $output .= '<div class="tmms-actions text-center mt-3">';
-        $output .= '<a href="' . $url . '" class="btn btn-sm btn-block" style="background: linear-gradient(135deg, #ff6600 0%, #e65c00 100%); border-color: #ff6600; color: #fff;">';
-        $output .= '<i class="fa fa-chart-bar"></i> ' . get_string('view_all_results', 'block_tmms_24');
-        $output .= '</a>';
-        $output .= '</div>';
+        $data = [
+            'icon' => $this->get_tmms_24_icon('4em', '', true),
+            'title' => get_string('management_title', 'block_tmms_24'),
+            'subtitle' => get_string('course_overview', 'block_tmms_24'),
+            'completion_rate' => number_format($completion_rate, 1),
+            'completion_rate_label' => get_string('completion_rate', 'block_tmms_24'),
+            'total_completed' => $total_completed,
+            'completed_label' => get_string('completed', 'block_tmms_24'),
+            'total_in_progress' => $total_in_progress,
+            'in_progress_label' => get_string('in_progress', 'block_tmms_24'),
+            'of_str' => get_string('of', 'block_tmms_24'),
+            'total_enrolled' => $total_enrolled,
+            'students_completed_str' => get_string('students_completed', 'block_tmms_24'),
+            'has_recent' => !empty($recent_completions_data),
+            'recent_title' => get_string('recent_completions', 'block_tmms_24'),
+            'recent_completions' => $recent_completions_data,
+            'link_url' => (new moodle_url('/blocks/tmms_24/teacher_view.php', ['courseid' => $COURSE->id]))->out(false),
+            'view_all_str' => get_string('view_all_results', 'block_tmms_24')
+        ];
         
-        $output .= '</div>';
-        
-        return $output;
+        return $OUTPUT->render_from_template('block_tmms_24/management_summary', $data);
     }
     
     private function get_score_badge_class($interpretation) {
