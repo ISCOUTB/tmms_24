@@ -1,4 +1,13 @@
 <?php
+/**
+ * Export - TMMS-24 Block
+ *
+ * @package    block_tmms_24
+ * @copyright  2026 SAVIO - Sistema de Aprendizaje Virtual Interactivo (UTB)
+ * @author     SAVIO Development Team
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/block_tmms_24.php');
 
