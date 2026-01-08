@@ -1,0 +1,87 @@
+<div class="block_tmms_24_results_summary">
+    <div class="row mb-4">
+        {{#dimensions_summary}}
+        <div class="col-md-4 mb-4">
+            <div class="card" style="border-color: {{color}} !important;">
+                <div class="card-body text-center">
+                    <h5>{{title}}</h5>
+                    <h3 style="color: {{color}};">{{score}}/40</h3>
+                    <p class="mb-0">{{interpretation}}</p>
+                    <div class="small text-muted mt-2" style="font-size: 0.85em; color: #999 !important;"><i class="fa fa-bullseye"></i> {{goal_text}}</div>
+                </div>
+            </div>
+        </div>
+        {{/dimensions_summary}}
+    </div>
+</div>
+
+{{#completion_info}}
+<div class="row mb-4">
+    <div class="col-md-4">
+        <strong>{{date_label}}:</strong> {{date}}
+    </div>
+    <div class="col-md-4">
+        <strong>{{age_label}}:</strong> {{age}}
+    </div>
+    <div class="col-md-4">
+        <strong>{{gender_label}}:</strong> {{gender}}
+    </div>
+</div>
+{{/completion_info}}
+
+<div class="card mt-4 mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">{{interpretation_title}}</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            {{#dimensions_detailed}}
+            <div class="col-md-4 mb-3 mb-md-0">
+                <strong>{{title}}:</strong><br>
+                {{interpretation_short}}
+                <div class="mt-2 text-muted">{{interpretation_long}}</div>
+            </div>
+            {{/dimensions_detailed}}
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0">{{detailed_responses_title}}</h5>
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <strong>{{legend_title}}:</strong> 
+            {{scale1}}, {{scale2}}, {{scale3}}, {{scale4}}, {{scale5}}
+        </div>
+        
+        {{#dimension_tables}}
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0">{{title}}</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        {{#items}}
+                        <tr>
+                            <td style="width: 40px;" class="text-center text-muted">{{num}}.</td>
+                            <td>{{text}}</td>
+                            <td style="width: 180px; vertical-align: middle;">
+                                <div class="d-flex align-items-center">
+                                    <div class="progress flex-grow-1 mr-2" style="height: 8px; background-color: #ffebe0;">
+                                        <div class="progress-bar" role="progressbar" style="height: 8px; width: {{percent}}%; background-color: #ff6600;" aria-valuenow="{{value}}" aria-valuemin="0" aria-valuemax="5"></div>
+                                    </div>
+                                    <span class="text-muted font-weight-bold" style="font-size: 0.9em; white-space: nowrap;">{{value}} / 5</span>
+                                </div>
+                            </td>
+                        </tr>
+                        {{/items}}
+                    </table>
+                </div>
+            </div>
+        </div>
+        {{/dimension_tables}}
+    </div>
+</div>
