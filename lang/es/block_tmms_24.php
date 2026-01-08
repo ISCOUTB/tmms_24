@@ -65,9 +65,9 @@ $string['questionnaire'] = 'Cuestionario';
 $string['item'] = 'Ítem';
 
 // Explicación de Dimensión Estrella
-$string['star_dimension_reason_perception_close'] = '<b>¿Por qué esta dimensión?</b> La Percepción es especial: el equilibrio es clave. Tu puntuación está cerca al óptimo.';
-$string['star_dimension_reason_perception_exact'] = '<b>¿Por qué esta dimensión?</b> La Percepción es especial: el equilibrio es clave. Tu puntuación está en el óptimo.';
-$string['star_dimension_reason_other'] = '<b>¿Por qué esta dimensión?</b> Es tu área más fuerte, donde una puntuación más alta indica un mejor manejo emocional.';
+$string['star_dimension_reason_perception_close'] = '<strong>¿Por qué esta dimensión?</strong> La Percepción es especial: el equilibrio es clave. Tu puntuación está cerca al óptimo.';
+$string['star_dimension_reason_perception_exact'] = '<strong>¿Por qué esta dimensión?</strong> La Percepción es especial: el equilibrio es clave. Tu puntuación está en el óptimo.';
+$string['star_dimension_reason_other'] = '<strong>¿Por qué esta dimensión?</strong> Es tu área más fuerte, donde una puntuación más alta indica un mejor manejo emocional.';
 
 // Metas de dimensiones
 $string['goal_perception'] = 'Rango ideal: {$a->range} (Óptimo: {$a->optimal})';
@@ -189,7 +189,8 @@ $string['enrolled_students'] = 'Total de Estudiantes';
 $string['dimension_statistics'] = 'Estadísticas por dimensión';
 $string['average_score'] = 'Puntuación promedio';
 $string['student_responses'] = 'Respuestas de estudiantes';
-$string['search_student'] = 'Buscar estudiante...';
+$string['search_student'] = 'Buscar estudiante o correo...';
+$string['no_results_search'] = 'Ningún nombre o correo contiene "{$a}"';
 $string['student'] = 'Estudiante';
 $string['view_results'] = 'Ver';
 $string['actions'] = 'Acciones';
@@ -249,7 +250,7 @@ $string['regulation_difficulty_managing'] = 'Dificultad para regular emociones y
 $string['regulation_adequate_balance'] = 'Regulación emocional adecuada y equilibrio emocional';
 $string['regulation_great_capacity'] = 'Gran capacidad para manejar emociones negativas y potenciar las positivas';
 
-// Interpretaciones TMMS-24 (largas) para mostrar abajo
+// Interpretaciones TMMS-24 (largas) para mostrar abajo - Estudiantes
 $string['perception_difficulty_feeling_long'] = 'Es posible que a veces te cueste notar o poner en palabras lo que sientes. Un buen inicio es pausar 30 segundos, identificar la emoción (por ejemplo: tristeza, enojo, ansiedad) y describir una señal corporal (tensión, nudo, calor).';
 $string['perception_adequate_feeling_long'] = 'Sueles notar lo que sientes sin quedarte atrapado en ello. Mantén este equilibrio con hábitos simples: nombrar la emoción, validar lo que ocurre y elegir una acción pequeña que te ayude.';
 $string['perception_excessive_attention_long'] = 'Percibes mucho lo que sientes, pero si te enfocas demasiado puede aparecer preocupación o rumiación. Te puede servir cambiar de foco: respira, etiqueta la emoción y pasa a un plan breve (qué puedo hacer ahora y qué dejo para después).';
@@ -259,6 +260,17 @@ $string['comprehension_great_clarity_long'] = 'Tiendes a comprender bien lo que 
 $string['regulation_difficulty_managing_long'] = 'Puede costar recuperar el equilibrio cuando aparece malestar. Prueba técnicas de base: respiración lenta, pausa antes de responder y una acción de autocuidado corta (caminar, hidratarte, estirar).';
 $string['regulation_adequate_balance_long'] = 'Generalmente logras manejar el malestar y sostener estados positivos. Para fortalecerlo, alterna estrategias: resolver problemas cuando puedes, y aceptación cuando no depende de ti.';
 $string['regulation_great_capacity_long'] = 'Sueles recuperarte bien y potenciar lo positivo. Cuida no “empujar” emociones incómodas hacia abajo; equilibrar aceptación y acción mantiene tu bienestar estable y auténtico.';
+
+// Interpretaciones TMMS-24 (largas) para mostrar abajo - Profesores y Administradores
+$string['perception_difficulty_feeling_long_teacher'] = 'El estudiante muestra una baja conciencia emocional. Suele tener dificultades para identificar o poner palabras a lo que siente, lo que puede manifestarse como apatía o desconexión ante retos académicos o conflictos en el aula.';
+$string['perception_adequate_feeling_long_teacher'] = 'El estudiante posee una capacidad equilibrada para reconocer sus emociones. Sabe prestar atención a sus estados de ánimo sin permitir que estos le desborden, facilitando una comunicación asertiva y un clima de aprendizaje estable.';
+$string['perception_excessive_attention_long_teacher'] = 'El estudiante tiende a una hiper-vigilancia emocional. Presta tanta atención a lo que siente que puede caer fácilmente en la rumiación o la ansiedad, distrayéndose de las tareas académicas por estar excesivamente centrado en su malestar.';
+$string['comprehension_difficulty_understanding_long_teacher'] = 'El estudiante presenta confusión sobre el origen de sus emociones. Le cuesta distinguir, por ejemplo, si su bloqueo se debe a la frustración, al miedo al fracaso o al cansancio, lo que dificulta que pueda aplicar soluciones específicas a sus problemas.';
+$string['comprehension_adequate_with_difficulties_long_teacher'] = 'El estudiante comprende sus emociones en condiciones normales, pero su claridad disminuye bajo presión. En periodos de exámenes o entregas críticas, puede sentirse abrumado y perder la capacidad de analizar racionalmente lo que le sucede.';
+$string['comprehension_great_clarity_long_teacher'] = 'El estudiante tiene un conocimiento profundo de su mundo emocional. Sabe exactamente por qué se siente de una manera determinada, lo que le permite ser muy autónomo, tomar decisiones coherentes y explicar con precisión sus necesidades al docente.';
+$string['regulation_difficulty_managing_long_teacher'] = 'El estudiante muestra una baja resiliencia emocional. Una vez que cae en un estado negativo (por una mala nota o un error), le cuesta mucho tiempo y esfuerzo recuperar el equilibrio, lo que puede afectar su rendimiento a largo plazo.';
+$string['regulation_adequate_balance_long_teacher'] = 'El estudiante es capaz de regular sus emociones de forma efectiva. Aunque experimente frustración o estrés, posee las herramientas necesarias para calmarse y retomar su ritmo de trabajo de manera independiente y en un tiempo razonable.';
+$string['regulation_great_capacity_long_teacher'] = 'El estudiante destaca por su excelente capacidad de autogestión. No solo repara rápidamente sus estados negativos, sino que sabe potenciar sus emociones positivas para automotivarse y mantener una actitud proactiva incluso ante los desafíos más difíciles.';
 
 // Etiquetas para estadísticas
 $string['difficulty_category'] = 'Dificultades';
@@ -306,3 +318,6 @@ $string['scale_legend_short'] = 'Escala: 1=Totalmente en desacuerdo | 2=En desac
 // Management view strings
 $string['management_title'] = 'Gestión del Test TMMS-24';
 $string['course_overview'] = 'Resumen del Curso';
+$string['question'] = 'Pregunta';
+$string['response'] = 'Respuesta';
+$string['questionnaire'] = 'Cuestionario';
