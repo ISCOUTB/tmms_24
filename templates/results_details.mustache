@@ -1,0 +1,182 @@
+<div class="block_tmms_24_results_container">
+    <div class="row">
+        <div class="col-12 d-flex justify-content-end mb-2">
+            {{#show_actions}}
+            {{#download_csv_url}}
+                 <div class="btn-group">
+                    <a href="{{download_csv_url}}" class="btn btn-outline-success btn-sm"><i class="fa fa-file-excel-o"></i> CSV</a>
+                    <a href="{{download_json_url}}" class="btn btn-outline-primary btn-sm"><i class="fa fa-file-code-o"></i> JSON</a>
+                 </div>
+            {{/download_csv_url}}
+            {{/show_actions}}
+        </div>
+    </div>
+
+    <div class="header-section text-center mb-4">
+        {{#student_name}}
+        <h2>{{#str}}student_results, block_tmms_24{{/str}}: {{student_name}}</h2>
+        {{/student_name}}
+        
+        {{^show_actions}}
+        {{#back_course_url}}
+        <div class="mb-3">
+             <a href="{{back_course_url}}" class="btn btn-secondary is-student-back-btn">{{#str}}back_to_course, block_tmms_24{{/str}}</a>
+        </div>
+        {{/back_course_url}}
+        {{/show_actions}}
+        
+        <!-- Quick Demographics Cards -->
+        {{#is_completed}}
+        <div class="row text-left mt-3">
+            <div class="col-md-4 mb-2">
+                <div class="card p-2 shadow-sm border-0 bg-light">
+                     <div class="d-flex align-items-center">
+                         <div class="mr-3 text-primary ml-2"><i class="fa fa-calendar fa-2x"></i></div>
+                         <div><small class="text-muted d-block">{{date_label}}</small><strong>{{date}}</strong></div>
+                     </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-2">
+                <div class="card p-2 shadow-sm border-0 bg-light">
+                     <div class="d-flex align-items-center">
+                         <div class="mr-3 ml-2" style="{{gender_color_style}}"><i class="fa fa-child fa-2x"></i></div>
+                         <div><small class="text-muted d-block">{{age_label}}</small><strong>{{age}}</strong></div>
+                     </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-2">
+                <div class="card p-2 shadow-sm border-0 bg-light">
+                     <div class="d-flex align-items-center">
+                         <div class="mr-3 ml-2" style="{{gender_color_style}}"><i class="fa {{gender_icon}} fa-2x"></i></div>
+                         <div><small class="text-muted d-block">{{gender_label}}</small><strong>{{gender_display}}</strong></div>
+                     </div>
+                </div>
+            </div>
+        </div>
+        {{/is_completed}}
+    </div>
+
+    {{#not_started}}
+    <div class="alert alert-warning text-center">
+        <h4><i class="fa fa-exclamation-circle"></i> {{#str}}not_started, block_tmms_24{{/str}}</h4>
+        <p>{{#str}}participant_not_started, block_tmms_24{{/str}}</p>
+    </div>
+    {{/not_started}}
+
+    {{^is_completed}}
+    {{^not_started}}
+    <div class="alert alert-warning" role="alert">
+        <h4 class="alert-heading"><i class="fa fa-clock-o"></i> {{#str}}test_in_progress, block_tmms_24{{/str}}</h4>
+        <p>{{test_in_progress_message}}</p>
+        <hr>
+        <p class="mb-1"><strong>{{#str}}progress_label, block_tmms_24{{/str}}:</strong></p>
+        <div class="progress mb-2" style="height: 30px;">
+            <div class="progress-bar bg-warning" role="progressbar" style="height: 30px !important; width: {{progress_percentage}}%;" aria-valuenow="{{progress_percentage}}" aria-valuemin="0" aria-valuemax="100">
+                <strong>{{progress_percentage}}%</strong>
+            </div>
+        </div>
+        <p><strong>{{#str}}has_answered, block_tmms_24{{/str}}:</strong> {{answered}}/{{total_questions}} {{#str}}questions, block_tmms_24{{/str}}</p>
+        
+        {{#show_submit_reminder}}
+        <div class="alert mt-2" role="alert" style="background-color: #cce6ea !important; border-color: #b8dce2 !important; color: #00434e !important;">
+            <i class="fa fa-info-circle"></i>
+            <strong>{{#str}}remind_submit_test, block_tmms_24{{/str}}</strong>
+        </div>
+        {{/show_submit_reminder}}
+        
+        <p class="mb-0"><em>{{results_available_message}}</em></p>
+    </div>
+    {{/not_started}}
+    {{/is_completed}}
+
+    {{#is_completed}}
+    <!-- Actions Rows (Downloads) - Visible only if show_actions (Teacher) is true -->
+    
+    <div class="row">
+        {{#dimensions}}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm" style="border-top: 4px solid {{color}};">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center mr-3" style="width: 50px; height: 50px; background-color: {{bg_color}}; color: {{color}}; font-size: 1.5rem; margin-right: 15px;">
+                            <i class="fa {{icon}}"></i>
+                        </div>
+                        <h5 class="card-title mb-0" style="color: {{color}};">{{title}}</h5>
+                    </div>
+                    
+                    <div class="text-center mb-3">
+                        <h2 class="display-4 font-weight-bold" style="color: {{color}};">{{score}}</h2>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar" role="progressbar" style="width: {{progress_width}}%; background-color: {{color}};" aria-valuenow="{{score}}" aria-valuemin="0" aria-valuemax="40"></div>
+                        </div>
+                        <div class="mt-2 small text-muted">
+                            {{{goal_text}}}
+                        </div>
+                    </div>
+                    
+                    <div class="interpretation-box p-3 rounded bg-light mb-3">
+                        <strong>{{#str}}interpretation, block_tmms_24{{/str}}:</strong><br>
+                        {{interpretation_short}}
+                    </div>
+                    
+                    <div class="long-interpretation text-muted small text-justify">
+                        {{interpretation_long}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/dimensions}}
+    </div>
+
+    <!-- Questionnaire Results (Read Only) -->
+    {{#questionnaire_results.0}}
+    <div class="card mt-4 mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">{{questionnaire_label}}</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <tbody>
+                    {{#questionnaire_results}}
+                        <tr>
+                            <td class="align-middle text-center"><strong>{{number}}</strong></td>
+                            <td class="align-middle">
+                                {{text}}
+                            </td>
+                            <td class="align-middle text-center" style="vertical-align: middle;">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="progress" style="height: 8px; width: 100%; border-radius: 4px; background-color: #e9ecef; margin-bottom: 5px; margin-top: 8px;">
+                                        <div class="progress-bar" role="progressbar" style="width: {{percentage}}%; background-color: {{color}};" aria-valuenow="{{response_value}}" aria-valuemin="1" aria-valuemax="5"></div>
+                                    </div>
+                                    <div style="font-size: 0.9rem; font-weight: bold; color: {{color}};">{{response_value}} <span class="text-muted font-weight-normal small">/ 5</span></div>
+                                    <div class="small text-muted" style="font-style: italic; font-size: 0.8rem;">{{response_label}}</div>
+                                </div>
+                            </td>
+                        </tr>
+                    {{/questionnaire_results}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {{/questionnaire_results.0}}
+
+
+    {{/is_completed}}
+    
+    {{#show_actions}}
+    <div class="mb-3 text-center">
+         <a href="{{back_teacher_url}}" class="btn btn-secondary"><i class="fa fa-arrow-left"></i> {{#str}}back_to_teacher_view, block_tmms_24{{/str}}</a>
+    </div>
+    {{/show_actions}}
+
+    {{^show_actions}}
+    <!-- Student Back Button at bottom as well -->
+    {{#back_course_url}}
+    <div class="text-center mt-4">
+         <a href="{{back_course_url}}" class="btn btn-secondary"><i class="fa fa-arrow-left"></i> {{#str}}back_to_course, block_tmms_24{{/str}}</a>
+    </div>
+    {{/back_course_url}}
+    {{/show_actions}}
+</div>
