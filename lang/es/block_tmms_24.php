@@ -320,4 +320,3 @@ $string['management_title'] = 'Gestión del Test TMMS-24';
 $string['course_overview'] = 'Resumen del Curso';
 $string['question'] = 'Pregunta';
 $string['response'] = 'Respuesta';
-$string['questionnaire'] = 'Cuestionario';
