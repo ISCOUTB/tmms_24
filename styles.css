@@ -1,10 +1,9 @@
 /* Estilos para el bloque TMMS-24 - Aislados con clase contenedora */
-
 /* Prevent tmms-24 icon from floating */
 .block_tmms_24_container img.tmms-24-icon {
-  float: none !important;
-  display: block;
-  margin: 0 auto 10px auto;
+    float: none !important;
+    display: block;
+    margin: 0 auto 10px auto;
 }
 
 .block_tmms_24_container {
@@ -117,6 +116,8 @@
 .block_tmms_24_container .form-group {
     flex: 1;
     min-width: 200px;
+    transition: all 0.3s ease;
+    border-radius: 8px;
 }
 
 .block_tmms_24_container .form-group label {
@@ -165,7 +166,7 @@
 
 .block_tmms_24_container .progress-bar {
     width: 100%;
-    height: 8px;
+    height: 10px;
     background-color: #e9ecef;
     border-radius: 10px;
     overflow: hidden;
@@ -199,14 +200,6 @@
     color: #2c3e50;
     margin-bottom: 25px;
     font-weight: 600;
-}
-
-.block_tmms_24_container .question-item {
-    margin-bottom: 25px;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
 }
 
 .block_tmms_24_container .question-item:hover {
@@ -285,11 +278,14 @@
 }
 
 /* Resaltado verde (mismo estilo de validación, pero en verde) */
-.block_tmms_24_container .question-item.scroll-highlight {
+.block_tmms_24_container .question-item.scroll-highlight,
+.block_tmms_24_container .form-group.scroll-highlight {
     background: #fff5eb;
     border: 2px solid #ff6600;
     border-left: 4px solid #ff6600;
     box-shadow: 0 0 8px rgba(255, 102, 0, 0.3);
+    border-radius: 8px;
+    padding: 10px;
 }
 
 .block_tmms_24_container #finishButtonContainer.scroll-highlight {
@@ -506,49 +502,50 @@
     .block_tmms_24_container .tmms-results-container {
         padding: 15px;
     }
-    
+
     .block_tmms_24_container .form-row {
         flex-direction: column;
     }
-    
+
     .block_tmms_24_container .form-group {
         min-width: 100%;
     }
-    
+
     .block_tmms_24_container .likert-scale {
         justify-content: center;
     }
-    
+
     .block_tmms_24_container .likert-option {
         min-width: 50px;
     }
-    
+
     .block_tmms_24_container .form-actions {
         flex-direction: column;
         align-items: center;
     }
-    
+
     .block_tmms_24_container .tmms-test-container .btn,
     .block_tmms_24_container .tmms-results-container .btn {
         width: 100%;
         max-width: 300px;
     }
-    
+
     .block_tmms_24_container .results-actions {
         display: flex;
         flex-direction: column;
         gap: 10px;
         align-items: center;
     }
-    
+
     .block_tmms_24_container .tmms-results-container .table {
         font-size: 0.875em;
     }
-    
+
     .block_tmms_24_container .tmms-results-container .table th,
     .block_tmms_24_container .tmms-results-container .table td {
         padding: 10px 8px;
     }
+
 }
 
 @media (max-width: 480px) {
@@ -558,19 +555,20 @@
     .block_tmms_24_container .results-summary {
         padding: 20px 15px;
     }
-    
+
     .block_tmms_24_container .question-item {
         padding: 15px;
     }
-    
+
     .block_tmms_24_container .likert-option {
         min-width: 45px;
         padding: 8px;
     }
-    
+
     .block_tmms_24_container .likert-label {
         font-size: 0.8em;
     }
+
 }
 
 /* Estados de accesibilidad */
@@ -591,6 +589,11 @@
 
 /* Animaciones suaves */
 .block_tmms_24_container .question-item {
+    margin-bottom: 25px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
     animation: fadeIn 0.3s ease-in;
 }
 
@@ -604,11 +607,9 @@
         transform: translateY(0);
     }
 }
-
 /* ========================================
    BLOCK_TMMS_24.PHP STYLES - Block Cards
    ======================================== */
-
 /* Results Block Styles */
 .block_tmms_24 .tmms-results-block {
     padding: 15px !important;
@@ -648,11 +649,6 @@
     padding: 12px !important;
     border-radius: 5px !important;
     border: 1px solid #e9ecef !important;
-}
-
-.block_tmms_24 .tmms-actions .btn {
-    box-shadow: 0 2px 4px rgba(0,123,255,0.2) !important;
-    font-weight: 500 !important;
 }
 
 .block_tmms_24 .tmms-actions .btn:hover {
@@ -756,7 +752,6 @@
 /* ========================================
    TEACHER_VIEW.PHP STYLES - Administrative Dashboard
    ======================================== */
-
 /* Export buttons: match personality_test gradients (scoped to teacher_view) */
 body#page-blocks-tmms_24-teacher_view .block_tmms_24_container .btn-primary {
     background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
@@ -781,7 +776,7 @@ body#page-blocks-tmms_24-teacher_view .block_tmms_24_container .btn-success:hove
 }
 
 /* Table action buttons - scoped to teacher_view page */
-body#page-blocks-tmms_24-teacher_view table .tmms-view-results {
+body#page-blocks-tmms_24-teacher_view .block_tmms_24_container table .tmms-view-results {
     display: inline-flex !important;
     justify-content: center !important;
     align-items: center !important;
@@ -800,7 +795,7 @@ body#page-blocks-tmms_24-teacher_view table .tmms-view-results {
     background: linear-gradient(135deg, #ff6600 0%, #e65c00 100%) !important;
 }
 
-body#page-blocks-tmms_24-teacher_view table .tmms-view-results:hover {
+body#page-blocks-tmms_24-teacher_view .block_tmms_24_container table .tmms-view-results:hover {
     transform: translateY(-1px) !important;
     box-shadow: 0 2px 4px rgba(255, 102, 0, 0.30) !important;
     text-decoration: none !important;
@@ -808,8 +803,8 @@ body#page-blocks-tmms_24-teacher_view table .tmms-view-results:hover {
     background: linear-gradient(135deg, #e65c00 0%, #cc5200 100%) !important;
 }
 
-body#page-blocks-tmms_24-teacher_view table .btn img,
-body#page-blocks-tmms_24-teacher_view table .btn i {
+body#page-blocks-tmms_24-teacher_view .block_tmms_24_container table .btn img,
+body#page-blocks-tmms_24-teacher_view .block_tmms_24_container table .btn i {
     vertical-align: middle !important;
 }
 
@@ -860,6 +855,7 @@ body#page-blocks-tmms_24-student_results .block_tmms_24_results_summary .card {
         max-width: 320px;
         display: block;
     }
+
 }
 
 /* Admin dashboard header styles */
@@ -954,7 +950,6 @@ body#page-blocks-tmms_24-teacher_view .block_tmms_24_container .table {
 body#page-blocks-tmms_24-teacher_view .block_tmms_24_container #searchInput {
     border: 1px solid #ced4da !important;
     border-radius: 6px !important;
-    padding: 10px 15px !important;
     font-size: 0.95rem !important;
 }
 
@@ -985,4 +980,44 @@ body#page-blocks-tmms_24-teacher_view .block_tmms_24_container .btn-danger {
 body#page-blocks-tmms_24-teacher_view .block_tmms_24_container .btn-danger:hover {
     background: linear-gradient(135deg, #b02a37 0%, #8a1f2a 100%) !important;
     color: #ffffff !important;
+}
+
+/* Pagination Customization */
+body#page-blocks-tmms_24-teacher_view .block_tmms_24_container .pagination .page-item.active .page-link {
+    background-color: #ff6600 !important;
+    border-color: #ff6600 !important;
+    color: #ffffff !important;
+}
+
+body#page-blocks-tmms_24-teacher_view .block_tmms_24_container .pagination .page-link {
+    color: #ff6600 !important;
+}
+
+body#page-blocks-tmms_24-teacher_view .block_tmms_24_container .pagination .page-link:hover {
+    background-color: #fff5eb !important;
+    color: #e65c00 !important;
+    border-color: #dee2e6 !important;
+}
+
+body#page-blocks-tmms_24-teacher_view .block_tmms_24_container .pagination .page-item.disabled .page-link {
+    color: #6c757d !important;
+    background-color: #fff !important;
+    border-color: #dee2e6 !important;
+}
+/* Custom Select Style for Gender with Arrow and same height as Age */
+.block_tmms_24_container select#gender.form-control {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23495057' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 36px;
+    cursor: pointer;
+}
+
+.block_tmms_24_container input#age.form-control,
+.block_tmms_24_container select#gender.form-control {
+    height: 48px !important;
 }

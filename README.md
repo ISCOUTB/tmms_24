@@ -98,7 +98,7 @@ Al finalizar, el estudiante recibe un diagnóstico de sus habilidades socioemoci
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/fc1833c6-45be-480d-92d2-b96d156e5eca" alt="Resultados del Estudiante" width="800">
+  <img src="https://github.com/user-attachments/assets/282667f4-27cd-4263-a949-f7e50fe54404" alt="Resultados del Estudiante" width="800">
 </p>
 
 ### 2. Experiencia del Profesor
@@ -123,7 +123,7 @@ Un panel de administración que centraliza el seguimiento grupal. Permite visual
 
 El docente puede profundizar en la orientación vocacional específica de cada estudiante. Esta vista permite comprender las necesidades particulares de cada alumno y las recomendaciones sugeridas por el sistema para brindar un apoyo docente más humano y dirigido.
 
-- **Nota:** Esta vista es la misma que la del estudiante, pero accesible por el profesor para cualquier alumno del curso.
+- **Nota:** Esta vista es la misma que la del estudiante, pero accesible por el profesor para cualquier alumno del curso con explicaciones sobre el resultado.
 
 ---
 

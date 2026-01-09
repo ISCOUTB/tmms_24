@@ -1,4 +1,13 @@
 <?php
+/**
+ * Delete Response - TMMS-24 Block
+ *
+ * @package    block_tmms_24
+ * @copyright  2026 SAVIO - Sistema de Aprendizaje Virtual Interactivo (UTB)
+ * @author     SAVIO Development Team
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 require_once('../../config.php');
 
 $id = required_param('id', PARAM_INT);

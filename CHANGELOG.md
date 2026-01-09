@@ -5,6 +5,19 @@ All notable changes to the TMMS-24 Moodle Block will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [3.0.1] — 2026-01-08
+
+### Added
+- Pagination in the student list in the administration panel.
+
+### Changed
+- Use of Mustache template architecture for all block views.
+- Complete code refactoring to separate presentation logic.
+- Improved code maintainability and scalability.
+- Optimized search performance.
+- Minor security improvements.
+
 ## [3.0.0] — 2025-12-22
 
 ### Added
